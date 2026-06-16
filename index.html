@@ -23,9 +23,11 @@
 </head>
 <body>
   <div class="scroll-progress" id="scrollProgress"></div>
+  <span class="scroll-lob" id="scrollLob" aria-hidden="true">🦞</span>
   <div class="bg-grid" aria-hidden="true"></div>
   <span class="deco deco--star" aria-hidden="true">✦</span>
   <span class="deco deco--lobster" aria-hidden="true">🦞</span>
+  <span class="deco deco--lobster2" aria-hidden="true">🦞</span>
 
   <!-- ===== top ticker ===== -->
   <div class="ticker ticker--top" aria-hidden="true">
@@ -171,10 +173,20 @@
     <!-- ============ LOBSTER ============ -->
     <section class="section lobster" id="lobster">
       <div class="lobster__panel">
+        <div class="bubbles" id="lobBubbles" aria-hidden="true"></div>
         <div class="section__head section__head--light">
           <span class="section__num section__num--light reveal" data-reveal>02</span>
           <h2 class="section__title section__title--light reveal" data-reveal>小龙虾生态 <span>/ LOBSTER AGENTS</span> 🦞</h2>
           <p class="lobster__lead reveal" data-reveal>与<b>诸葛导师</b>一起探索的「小龙虾课程」——把一只只 AI 智能体接入真实场景，让课程长出生产力。</p>
+          <span class="badge lob-hatch reveal" data-reveal>🦞 已养成 4 只 · 持续孵化中…</span>
+        </div>
+
+        <div class="lobflow reveal" data-reveal>
+          <span class="lobflow__step">🔍 发现真实需求</span>
+          <span class="lobflow__arr">→</span>
+          <span class="lobflow__step">🦞 养成一只智能体</span>
+          <span class="lobflow__arr">→</span>
+          <span class="lobflow__step">🚀 上线见生产力</span>
         </div>
 
         <div class="lobster__grid">
@@ -212,6 +224,7 @@
         <span class="section__num reveal" data-reveal>04</span>
         <h2 class="section__title reveal" data-reveal>黑客松之旅 <span>/ HACKATHON JOURNEY</span></h2>
         <p class="section__sub reveal" data-reveal>从第一次怯生生地报名，到站上主办方的位置——一条从<b>参赛者 → 志愿者 → 工作人员 → 管理者</b>的成长曲线。</p>
+        <span class="badge journey-badge reveal" data-reveal>🦞 像龙虾蜕壳，一次次长大</span>
       </div>
       <div class="timeline" id="timeline"></div>
     </section>
@@ -260,8 +273,17 @@
     </section>
   </main>
 
+  <!-- ===== lobster parade ===== -->
+  <div class="ticker ticker--band ticker--reverse" aria-hidden="true">
+    <div class="ticker__track">
+      <span>🦞 LOBSTER MODE</span><b>✦</b><span>养龙虾</span><b>✦</b><span>小龙虾生态</span><b>✦</b><span>把需求养成智能体</span><b>🦞</b><span>VIBE CODER</span><b>✦</b>
+      <span>🦞 LOBSTER MODE</span><b>✦</b><span>养龙虾</span><b>✦</b><span>小龙虾生态</span><b>✦</b><span>把需求养成智能体</span><b>🦞</b><span>VIBE CODER</span><b>✦</b>
+    </div>
+  </div>
+
   <!-- ============ FOOTER ============ -->
   <footer class="footer" id="footer">
+    <span class="footer__lob" aria-hidden="true">🦞</span>
     <div class="footer__cta-wrap">
       <p class="footer__kicker">想聊聊 AI、教育或黑客松？</p>
       <a class="footer__big" href="https://cjy-self-production.zeabur.app" target="_blank" rel="noopener">访问我的专业主页 <span>↗</span></a>

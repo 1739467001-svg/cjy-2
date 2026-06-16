@@ -69,8 +69,8 @@ mark {
 
 /* ---------- scroll progress ---------- */
 .scroll-progress {
-  position: fixed; top: 0; left: 0; height: 6px; width: 0%;
-  background: var(--red); z-index: 100; border-bottom: var(--bd-2);
+  position: fixed; bottom: 0; left: 0; height: 6px; width: 0%;
+  background: var(--red); z-index: 100; border-top: var(--bd-2);
   transition: width .1s linear;
 }
 
@@ -314,6 +314,49 @@ mark {
   background: rgba(20,17,11,.28); border: 2px dashed var(--paper); border-radius: 14px;
   padding: 1.1rem 1.4rem; font-size: 1rem; font-weight: 500;
 }
+
+/* =====================================================================
+   Lobster theme enrichments 🦞
+   ===================================================================== */
+/* lobster crawling along the bottom scroll-progress bar */
+.scroll-lob {
+  position: fixed; bottom: 1px; left: 0; z-index: 101; font-size: 20px;
+  pointer-events: none; transform: translateX(-50%) scaleX(-1);
+  filter: drop-shadow(1px 1px 0 rgba(20,17,11,.45)); transition: left .1s linear;
+}
+/* extra faint background lobster (left side) for balance */
+.deco--lobster2 { top: 57%; left: 3%; font-size: 5rem; opacity: .06; animation: spin 52s linear infinite; }
+
+/* rising bubbles inside the ecosystem panel */
+.bubbles { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.bubbles span {
+  position: absolute; bottom: -28px; border-radius: 50%;
+  background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.42);
+  animation: rise linear infinite;
+}
+@keyframes rise {
+  0%   { transform: translateY(0) scale(.5); opacity: 0; }
+  12%  { opacity: .9; }
+  88%  { opacity: .9; }
+  100% { transform: translateY(calc(-1 * var(--rise, 520px))) scale(1.1); opacity: 0; }
+}
+
+/* "raise a lobster" methodology flow */
+.lobflow { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: 0 0 1.9rem; position: relative; z-index: 1; }
+.lobflow__step {
+  font-family: var(--cn); font-weight: 700; font-size: .95rem; color: var(--ink);
+  background: var(--paper-2); border: var(--bd-2); border-radius: 999px; padding: .5rem 1rem; box-shadow: var(--sh-sm);
+}
+.lobflow__arr { font-family: var(--black); color: var(--lime); font-size: 1.3rem; }
+.lob-hatch { background: var(--lime); color: var(--ink); transform: rotate(-1.5deg); margin-top: 1rem; }
+
+/* journey molt flourish */
+.journey-badge { background: var(--red); color: var(--paper); transform: rotate(-1deg); margin-top: 1.2rem; }
+
+/* footer lobster watermark */
+.footer { position: relative; overflow: hidden; }
+.footer__lob { position: absolute; right: -6px; bottom: -28px; font-size: 11rem; opacity: .07; transform: rotate(-12deg); pointer-events: none; z-index: 0; }
+.footer__cta-wrap, .footer__bar { position: relative; z-index: 1; }
 
 /* =====================================================================
    Projects

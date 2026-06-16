@@ -123,6 +123,24 @@
   }
 
   /* ===================================================================
+     Underwater bubbles inside the lobster ecosystem panel
+     =================================================================== */
+  const bubbleHost = $("#lobBubbles");
+  if (bubbleHost && !reduceMotion) {
+    const panelH = Math.max((bubbleHost.parentElement?.offsetHeight || 0), 360);
+    let html = "";
+    for (let i = 0; i < 11; i++) {
+      const size = 8 + Math.random() * 26;
+      const left = Math.random() * 100;
+      const dur = 7 + Math.random() * 8;
+      const delay = -Math.random() * dur;     // negative → already distributed on load
+      html += `<span style="left:${left.toFixed(1)}%;width:${size | 0}px;height:${size | 0}px;` +
+              `--rise:${(panelH + 80) | 0}px;animation-duration:${dur.toFixed(1)}s;animation-delay:${delay.toFixed(1)}s"></span>`;
+    }
+    bubbleHost.innerHTML = html;
+  }
+
+  /* ===================================================================
      Reveal on scroll — scroll-driven (robust against anchor jumps /
      instant scrollIntoView, where IntersectionObserver can miss firing)
      =================================================================== */
@@ -212,13 +230,16 @@
      =================================================================== */
   const nav = $("#nav");
   const progress = $("#scrollProgress");
+  const scrollLob = $("#scrollLob");
   let scrollRaf = 0;
   const update = () => {
     scrollRaf = 0;
     const y = window.scrollY;
     nav.classList.toggle("is-stuck", y > 24);
     const h = document.documentElement.scrollHeight - window.innerHeight;
-    progress.style.width = `${(y / (h || 1)) * 100}%`;
+    const pct = (y / (h || 1)) * 100;
+    progress.style.width = `${pct}%`;
+    if (scrollLob) scrollLob.style.left = `${pct}%`;
     runReveal();
   };
   const onScroll = () => { if (!scrollRaf) scrollRaf = requestAnimationFrame(update); };
