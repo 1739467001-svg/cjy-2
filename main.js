@@ -290,7 +290,8 @@
     // chain: pts[0] chases the cursor; each following point chases the prior
     const pts = Array.from({ length: N }, () => ({ x: innerWidth / 2, y: innerHeight / 2 }));
     const mouse = { x: innerWidth / 2, y: innerHeight / 2 };
-    let active = false, raf = 0;
+    let active = false, raf = 0, pinchAt = -1e9;
+    const PINCH_MS = 320;
 
     const loop = () => {
       pts[0].x += (mouse.x - pts[0].x) * 0.34;
@@ -307,27 +308,58 @@
       const vx = hp.x - ref.x, vy = hp.y - ref.y;
       const facing = vx >= 0 ? -1 : 1;          // 🦞 faces left by default; flip to face travel
       const tilt = Math.max(-0.4, Math.min(0.4, vy * 0.012));
+      // click "pinch": a quick claw snap — pop up, sideways squish (open→close), wiggle
+      const pe = (performance.now() - pinchAt) / PINCH_MS;
+      let scale = 1, squish = 1, snap = 0;
+      if (pe >= 0 && pe < 1) {
+        scale  = 1 + Math.sin(pe * Math.PI) * 0.45;
+        squish = 1 + Math.sin(pe * Math.PI * 2) * 0.28;
+        snap   = Math.sin(pe * Math.PI * 2) * 0.22;
+      }
       head.style.transform =
-        `translate(${hp.x}px, ${hp.y}px) translate(-50%, -50%) rotate(${tilt}rad) scaleX(${facing})`;
+        `translate(${hp.x}px, ${hp.y}px) translate(-50%, -50%) rotate(${tilt + snap}rad) scale(${scale}) scaleX(${facing * squish})`;
       raf = requestAnimationFrame(loop);
     };
 
-    const onMove = (e) => {
-      mouse.x = e.clientX; mouse.y = e.clientY;
-      if (!active) {
-        active = true;
-        pts.forEach((p) => { p.x = mouse.x; p.y = mouse.y; });
-        layer.classList.add("is-on");
-        loop();
+    const start = () => {
+      if (!active) { active = true; pts.forEach((p) => { p.x = mouse.x; p.y = mouse.y; }); }
+      layer.classList.add("is-on");
+      cancelAnimationFrame(raf); loop();
+    };
+
+    const onMove = (e) => { mouse.x = e.clientX; mouse.y = e.clientY; if (!active) start(); };
+
+    // a little bubble burst when the claw snaps
+    const burst = (x, y) => {
+      for (let k = 0; k < 7; k++) {
+        const s = document.createElement("span");
+        s.className = "lobtrail__pop" + (k % 3 === 0 ? " lobtrail__pop--lime" : "");
+        s.style.transform = `translate(${x}px, ${y}px)`;
+        layer.appendChild(s);
+        const ang = (Math.PI * 2 * k) / 7 + Math.random() * 0.6;
+        const dist = 20 + Math.random() * 18;
+        requestAnimationFrame(() => {
+          s.style.transform = `translate(${x + Math.cos(ang) * dist}px, ${y + Math.sin(ang) * dist}px) scale(.4)`;
+          s.style.opacity = "0";
+        });
+        setTimeout(() => s.remove(), 480);
       }
     };
+
+    const onDown = (e) => {
+      mouse.x = e.clientX; mouse.y = e.clientY;
+      if (!active) start();
+      pinchAt = performance.now();
+      burst(e.clientX, e.clientY);
+    };
+
     window.addEventListener("pointermove", onMove, { passive: true });
-    window.addEventListener("pointerdown", onMove, { passive: true });
+    window.addEventListener("pointerdown", onDown, { passive: true });
     document.addEventListener("mouseleave", () => layer.classList.remove("is-on"));
     document.addEventListener("mouseenter", () => active && layer.classList.add("is-on"));
     document.addEventListener("visibilitychange", () => {
-      if (document.hidden) { cancelAnimationFrame(raf); }
-      else if (active) { loop(); }
+      if (document.hidden) cancelAnimationFrame(raf);
+      else if (active) { cancelAnimationFrame(raf); loop(); }
     });
   }
 })();
