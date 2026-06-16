@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 · 这只小龙虾游走了 🦞 · CJY 陈俊烨</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦞</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@500;700&family=Noto+Sans+SC:wght@500;900&family=Space+Mono:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --paper:#F7F2E4; --ink:#14110B; --red:#FF4D1C; --blue:#2B47F0; --lime:#C8FF2D;
+      --bd:3px solid var(--ink); --sh:6px 6px 0 var(--ink); }
+    * { margin:0; box-sizing:border-box; }
+    body {
+      min-height:100vh; display:grid; place-items:center; padding:2rem; text-align:center;
+      font-family:"Space Grotesk","Noto Sans SC",system-ui,sans-serif; color:var(--ink); background:var(--paper);
+      background-image:linear-gradient(rgba(20,17,11,.05) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(20,17,11,.05) 1.5px,transparent 1.5px);
+      background-size:32px 32px; overflow:hidden;
+    }
+    .lob { font-size:clamp(4.5rem,16vw,9rem); line-height:1; filter:drop-shadow(7px 7px 0 rgba(20,17,11,.25)); animation:swim 5s cubic-bezier(.2,.8,.2,1) infinite; }
+    @keyframes swim { 50% { transform:translateY(-18px) rotate(-8deg); } }
+    h1 { font-family:"Archivo Black","Noto Sans SC",sans-serif; font-size:clamp(5rem,22vw,12rem); line-height:.85;
+      color:var(--red); -webkit-text-stroke:2px var(--ink); text-shadow:8px 8px 0 var(--ink); letter-spacing:-2px; margin:.2em 0 .1em; }
+    .msg { font-weight:700; font-size:clamp(1.05rem,3vw,1.5rem); }
+    .msg mark { background:var(--lime); padding:0 .2em; border-radius:5px; }
+    .sub { font-family:"Space Mono",monospace; color:#5C564A; margin:.7rem 0 2rem; letter-spacing:1px; }
+    .btn { display:inline-flex; align-items:center; gap:.5rem; font-weight:700; font-size:1.05rem; text-decoration:none;
+      padding:.85rem 1.6rem; border:var(--bd); border-radius:14px; box-shadow:var(--sh); background:var(--blue); color:var(--paper);
+      transition:transform .15s,box-shadow .15s; }
+    .btn:hover { transform:translate(-3px,-3px); box-shadow:10px 10px 0 var(--ink); }
+    .btn:active { transform:translate(3px,3px); box-shadow:2px 2px 0 var(--ink); }
+    @media (prefers-reduced-motion:reduce){ .lob{animation:none;} .btn{transition:none;} }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="lob" aria-hidden="true">🦞</div>
+    <h1>404</h1>
+    <p class="msg">这一页的小龙虾，<mark>游到别处去了</mark>。</p>
+    <p class="sub">PAGE NOT FOUND · 但虾还在</p>
+    <a class="btn" href="/">← 回首页 抓虾去</a>
+  </main>
+</body>
+</html>

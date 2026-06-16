@@ -40,6 +40,9 @@ main.js             交互逻辑、项目与时间轴数据、彩蛋
 og.png              1200×630 社交分享大图
 icon-192/512.png    PWA 图标（apple-touch-icon.png 为 iOS 主屏图标）
 site.webmanifest    PWA 清单
+robots.txt          搜索引擎抓取规则
+sitemap.xml         站点地图
+404.html            野兽派「迷路小龙虾」404 页
 tools/              分享图与图标的生成源（og.html / _icon.html，用浏览器截图导出）
 ```
 
