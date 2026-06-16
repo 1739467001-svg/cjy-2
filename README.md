@@ -33,46 +33,47 @@
 
 ## 📁 结构
 
+可部署的站点全部收在 `public/`（即 nginx / Zeabur 的 web 根目录），仓库元信息与生成源留在根目录：
+
 ```
-index.html          页面结构、内容与 <head> 元信息（OG / Twitter / JSON-LD）
-styles.css          野兽派设计系统（配色 / 边框 / 投影 / 排版 / 响应式）
-main.js             交互逻辑、项目与时间轴数据、彩蛋
-og.png              1200×630 社交分享大图
-icon-192/512.png    PWA 图标（apple-touch-icon.png 为 iOS 主屏图标）
-site.webmanifest    PWA 清单
-robots.txt          搜索引擎抓取规则
-sitemap.xml         站点地图
-404.html            野兽派「迷路小龙虾」404 页
-tools/              分享图与图标的生成源（og.html / _icon.html，用浏览器截图导出）
+public/                    可部署的静态站点（web 根目录）
+  index.html               页面结构、内容与 <head> 元信息（OG / Twitter / JSON-LD）
+  styles.css               野兽派设计系统（配色 / 边框 / 投影 / 排版 / 响应式）
+  main.js                  交互逻辑、项目与时间轴数据、彩蛋
+  og.png                   1200×630 社交分享大图
+  icon-192/512.png         PWA 图标（apple-touch-icon.png 为 iOS 主屏图标）
+  site.webmanifest         PWA 清单
+  robots.txt · sitemap.xml 收录用
+  404.html                 野兽派「迷路小龙虾」404 页
+Dockerfile                 nginx 静态服务镜像（Zeabur 自动识别并构建）
+default.conf.template      nginx 配置（404 / gzip / 缓存 / MIME / 监听 $PORT）
+tools/                     分享图与图标的生成源（og.html / _icon.html，浏览器截图导出）
+DEPLOY.md                  Zeabur 部署说明
 ```
 
 ## 🚀 本地预览
 
-任选其一：
-
 ```bash
-# Python
-python3 -m http.server 8000
+# 静态预览（任选其一）
+cd public && python3 -m http.server 8000     # 或：npx serve public
 
-# Node
-npx serve .
+# 或用与线上完全一致的 nginx 镜像
+docker build -t cjy-site . && docker run --rm -p 8080:8080 cjy-site
 ```
 
-然后打开 `http://localhost:8000`。
+## ☁️ 部署（Zeabur）
 
-## ☁️ 部署
+已整理成适合 Zeabur 的标准架构：站点在 `public/`，根目录的 `Dockerfile`
+用 nginx 托管（处理 404、gzip、缓存、正确 MIME，并监听 Zeabur 注入的 `$PORT`）。
+导入仓库后 Zeabur 会**自动识别 `Dockerfile`** 并构建部署。
 
-把这三个文件推到任意静态托管即可（当前线上：
-<https://cjy-self-production.zeabur.app>）：
-
-- **Zeabur / Vercel / Netlify**：导入仓库，框架选「Static / 其它」，
-  无需构建命令，发布目录为根目录。
-- **GitHub Pages**：仓库 Settings → Pages → 选择分支根目录。
+完整步骤（含「纯静态」备选方案）见 **[DEPLOY.md](DEPLOY.md)**。
+当前线上：<https://cjy-self-production.zeabur.app>
 
 ## 🎨 改配色 / 内容
 
-- 配色与边框、投影统一在 `styles.css` 顶部的 `:root` 变量里调。
-- 项目作品改 `main.js` 的 `projects` 数组；黑客松改 `journey` 数组；
+- 配色与边框、投影统一在 `public/styles.css` 顶部的 `:root` 变量里调。
+- 项目作品改 `public/main.js` 的 `projects` 数组；黑客松改 `journey` 数组；
   角色轮播改 `roles` 数组。
 
 ---
