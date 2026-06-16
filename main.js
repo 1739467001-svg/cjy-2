@@ -383,4 +383,106 @@
       else if (active) { cancelAnimationFrame(raf); loop(); }
     });
   }
+
+  /* ===================================================================
+     Easter eggs 🦞
+     · 5 rapid clicks            → a parade of lobsters swims across screen
+     · type "lobster" / "cjy"    → same parade
+     · Konami ↑↑↓↓←→←→ B A        → lobster rain + brand confetti
+     · open the console          → a hidden hello
+     =================================================================== */
+  (() => {
+    const eggLayer = document.createElement("div");
+    eggLayer.className = "egg-layer";
+    eggLayer.setAttribute("aria-hidden", "true");
+    document.body.appendChild(eggLayer);
+
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const PALETTE = ["#FF4D1C", "#2B47F0", "#C8FF2D", "#FF5DA2", "#14110B"];
+
+    let toastTimer;
+    const toast = (msg) => {
+      let el = eggLayer.querySelector(".egg-toast");
+      if (!el) { el = document.createElement("div"); el.className = "egg-toast"; eggLayer.appendChild(el); }
+      el.textContent = msg; el.classList.add("is-show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("is-show"), 2600);
+    };
+
+    // lobster parade — swim across horizontally with a gentle bob
+    let paradeBusy = false;
+    const parade = () => {
+      if (paradeBusy) return; paradeBusy = true;
+      toast("🦞 一大群小龙虾游过！");
+      const N = reduceMotion ? 6 : 16;
+      for (let i = 0; i < N; i++) {
+        const lob = document.createElement("span");
+        lob.className = "egg-lob"; lob.textContent = "🦞";
+        lob.style.fontSize = `${rand(22, 48) | 0}px`;
+        lob.style.top = `${rand(5, 90).toFixed(1)}vh`;
+        eggLayer.appendChild(lob);
+        const bob = rand(10, 26);
+        const anim = lob.animate([
+          { transform: "translateX(-20vw) translateY(0px) rotate(-8deg) scaleX(-1)", opacity: 0 },
+          { opacity: 1, offset: 0.06 },
+          { transform: `translateX(16vw) translateY(${-bob}px) rotate(7deg) scaleX(-1)`, offset: 0.25 },
+          { transform: `translateX(50vw) translateY(${(bob * 0.5).toFixed(0)}px) rotate(-6deg) scaleX(-1)`, offset: 0.5 },
+          { transform: `translateX(84vw) translateY(${-bob}px) rotate(7deg) scaleX(-1)`, offset: 0.75 },
+          { opacity: 1, offset: 0.94 },
+          { transform: "translateX(122vw) translateY(0px) rotate(-8deg) scaleX(-1)", opacity: 0 },
+        ], { duration: reduceMotion ? 1000 : rand(2400, 4200), delay: reduceMotion ? i * 40 : rand(0, 800), easing: "linear", fill: "forwards" });
+        anim.onfinish = () => lob.remove();
+      }
+      setTimeout(() => { paradeBusy = false; }, 7000);
+    };
+
+    // lobster rain + confetti
+    const rain = () => {
+      toast("🦞 KONAMI! 龙虾雨 🎉");
+      const N = reduceMotion ? 12 : 44;
+      for (let i = 0; i < N; i++) {
+        const isLob = Math.random() < 0.55;
+        const p = document.createElement("span");
+        if (isLob) { p.className = "egg-lob"; p.textContent = "🦞"; p.style.fontSize = `${rand(18, 42) | 0}px`; }
+        else { p.className = "egg-confetti"; p.style.background = PALETTE[(Math.random() * PALETTE.length) | 0]; }
+        p.style.left = `${rand(0, 100).toFixed(1)}vw`;
+        eggLayer.appendChild(p);
+        const anim = p.animate([
+          { transform: "translateY(-12vh) translateX(0) rotate(0deg)", opacity: 1 },
+          { transform: `translateY(112vh) translateX(${rand(-12, 12).toFixed(1)}vw) rotate(${rand(-720, 720) | 0}deg)`, opacity: 1 },
+        ], { duration: reduceMotion ? 1200 : rand(2200, 4400), delay: rand(0, 900), easing: "cubic-bezier(.35,.1,.5,1)", fill: "forwards" });
+        anim.onfinish = () => p.remove();
+      }
+    };
+
+    // trigger: 5 rapid clicks
+    let clicks = 0, clickTimer;
+    window.addEventListener("pointerdown", () => {
+      clicks++;
+      clearTimeout(clickTimer);
+      clickTimer = setTimeout(() => { clicks = 0; }, 1200);
+      if (clicks >= 5) { clicks = 0; parade(); }
+    }, { passive: true });
+
+    // trigger: Konami code + secret words
+    const KON = ["arrowup","arrowup","arrowdown","arrowdown","arrowleft","arrowright","arrowleft","arrowright","b","a"];
+    let kIdx = 0, typed = "";
+    window.addEventListener("keydown", (e) => {
+      const k = (e.key || "").toLowerCase();
+      kIdx = (k === KON[kIdx]) ? kIdx + 1 : (k === KON[0] ? 1 : 0);
+      if (kIdx === KON.length) { kIdx = 0; rain(); }
+      if (k.length === 1) {
+        typed = (typed + k).slice(-8);
+        if (/lobster$|cjy$/.test(typed)) { typed = ""; parade(); }
+      }
+    });
+
+    // console hello
+    try {
+      console.log("%c🦞 CJY · 陈俊烨 — Vibe Coder",
+        "font:700 20px 'Space Grotesk',sans-serif;color:#FF4D1C;text-shadow:1px 1px 0 #14110B");
+      console.log("%c你发现了控制台 :) 连点 5 下、输入 lobster，或试试 Konami 秘籍 ↑↑↓↓←→←→ B A 🦞",
+        "font:13px monospace;color:#2B47F0");
+    } catch (_) {}
+  })();
 })();
