@@ -431,6 +431,25 @@ mark {
 .vstep--now .vstep__when { background: var(--paper); color: var(--ink); }
 
 /* =====================================================================
+   Contact
+   ===================================================================== */
+.contact__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.4rem; }
+.ccard { padding: 1.7rem; display: flex; flex-direction: column; gap: .45rem; transition: transform .2s var(--ease), box-shadow .2s var(--ease); }
+.ccard:hover { transform: translate(-4px,-4px) rotate(-1deg); box-shadow: var(--sh-lg); }
+.ccard h3 { font-size: 1.2rem; }
+.ccard__val { font-family: var(--mono); font-weight: 700; font-size: 1.02rem; word-break: break-all; opacity: .95; }
+.ccard__acts { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .8rem; }
+.ccard__btn {
+  font-family: var(--cn); font-weight: 700; font-size: .88rem; cursor: pointer;
+  background: var(--paper-2); color: var(--ink); border: var(--bd-2); border-radius: 10px;
+  padding: .5rem .95rem; box-shadow: var(--sh-sm);
+  transition: transform .15s var(--ease), box-shadow .15s var(--ease), background .2s;
+}
+.ccard__btn:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--ink); }
+.ccard__btn.is-copied { background: var(--lime); }
+.ccard__hint { font-family: var(--mono); font-size: .78rem; opacity: .82; margin-top: .35rem; }
+
+/* =====================================================================
    Footer
    ===================================================================== */
 .footer { border-top: var(--bd); background: var(--ink); color: var(--paper); margin-top: 4rem; }
@@ -550,7 +569,7 @@ mark {
   .vsteps { grid-template-columns: repeat(2, 1fr); }
   .vstep--now { grid-column: span 2; }
 }
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .nav__links, .nav__cta { display: none; }
   .nav__burger { display: flex; margin-left: auto; }
   .nav__links.is-open {
@@ -559,6 +578,8 @@ mark {
     background: var(--paper); border-bottom: var(--bd);
   }
   .nav__links.is-open a { padding: .7rem .8rem; font-size: 1rem; }
+}
+@media (max-width: 760px) {
   .hero__stats { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 520px) {

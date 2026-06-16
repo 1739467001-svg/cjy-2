@@ -262,8 +262,34 @@
       }
     });
   }, { threshold: 0.3, rootMargin: "-30% 0px -55% 0px" });
-  ["about", "lobster", "projects", "journey", "campus", "volunteer"].forEach((id) => {
+  ["about", "lobster", "projects", "journey", "campus", "volunteer", "contact"].forEach((id) => {
     const s = document.getElementById(id); if (s) secObserver.observe(s);
+  });
+
+  /* ===================================================================
+     Contact — copy-to-clipboard buttons
+     =================================================================== */
+  const copyText = async (t) => {
+    try { await navigator.clipboard.writeText(t); return true; }
+    catch {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        const ok = document.execCommand("copy"); ta.remove(); return ok;
+      } catch { return false; }
+    }
+  };
+  $$("[data-copy]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const ok = await copyText(btn.getAttribute("data-copy"));
+      const original = btn.dataset.label || btn.textContent;
+      btn.dataset.label = original;
+      btn.textContent = ok ? "已复制 ✓" : "复制失败，请手动复制";
+      btn.classList.toggle("is-copied", ok);
+      clearTimeout(btn._restore);
+      btn._restore = setTimeout(() => { btn.textContent = original; btn.classList.remove("is-copied"); }, 1700);
+    });
   });
 
   // mobile menu
