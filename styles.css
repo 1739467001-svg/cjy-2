@@ -490,6 +490,50 @@ mark {
 }
 .egg-toast.is-show { opacity: 1; transform: translateX(-50%) translateY(0) rotate(-1.5deg); }
 
+/* skip link + keyboard focus (a11y) */
+.skip-link {
+  position: fixed; top: -120px; left: 12px; z-index: 200;
+  background: var(--lime); color: var(--ink); border: var(--bd); border-radius: 10px;
+  padding: .6rem 1.1rem; font-weight: 700; box-shadow: var(--sh); transition: top .2s var(--ease);
+}
+.skip-link:focus { top: calc(34px + 12px); outline: none; }
+:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; border-radius: 6px; }
+
+/* subtle easter-egg hint in the footer */
+.egg-hint { position: relative; display: inline-flex; }
+.egg-hint__btn {
+  background: transparent; border: 0; cursor: pointer; font-size: 1.15rem; line-height: 1;
+  padding: 5px; border-radius: 8px; opacity: .55; color: inherit;
+  transition: opacity .2s, transform .2s; animation: egghint-pulse 3.6s ease-in-out infinite;
+}
+.egg-hint__btn:hover, .egg-hint__btn:focus-visible { opacity: 1; transform: translateY(-2px) rotate(-8deg); }
+@keyframes egghint-pulse { 0%, 100% { transform: scale(1); opacity: .5; } 50% { transform: scale(1.14); opacity: .85; } }
+.egg-hint__pop {
+  position: absolute; right: 0; bottom: calc(100% + 10px); z-index: 9991; width: max-content; max-width: 80vw;
+  background: var(--paper); color: var(--ink); border: var(--bd); border-radius: 14px; box-shadow: var(--sh-lg);
+  padding: .9rem 1.1rem; text-align: left;
+  opacity: 0; visibility: hidden; transform: translateY(8px) rotate(-1deg);
+  transition: opacity .22s var(--ease), transform .22s var(--ease), visibility .22s;
+}
+.egg-hint__pop.is-open { opacity: 1; visibility: visible; transform: none; }
+.egg-hint__pop h4 { font-family: var(--cn); font-weight: 900; font-size: .98rem; margin-bottom: .5rem; }
+.egg-hint__pop ul { display: grid; gap: .28rem; margin: 0 0 .75rem; }
+.egg-hint__pop li { font-family: var(--mono); font-size: .82rem; color: var(--muted); }
+.egg-hint__try {
+  font-family: var(--cn); font-weight: 700; font-size: .85rem; background: var(--red); color: var(--paper);
+  border: var(--bd-2); border-radius: 9px; padding: .45rem .85rem; cursor: pointer; box-shadow: var(--sh-sm);
+  transition: transform .15s var(--ease), box-shadow .15s var(--ease);
+}
+.egg-hint__try:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--ink); }
+/* on small screens the footer bar wraps, so center the popover as a fixed sheet */
+@media (max-width: 620px) {
+  .egg-hint__pop {
+    position: fixed; left: 50%; right: auto; bottom: 84px; top: auto; max-width: 88vw;
+    transform: translateX(-50%) translateY(8px) rotate(-1deg);
+  }
+  .egg-hint__pop.is-open { transform: translateX(-50%) translateY(0) rotate(-1deg); }
+}
+
 /* =====================================================================
    Reveal
    ===================================================================== */

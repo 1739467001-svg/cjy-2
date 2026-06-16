@@ -477,6 +477,47 @@
       }
     });
 
+    // trigger: shake the phone (iOS asks permission on first tap)
+    if (window.matchMedia("(pointer: coarse)").matches && typeof DeviceMotionEvent !== "undefined") {
+      const listen = () => {
+        let last = null, hits = 0, hitAt = 0, lastT = 0;
+        window.addEventListener("devicemotion", (e) => {
+          const a = e.accelerationIncludingGravity || e.acceleration; if (!a) return;
+          const now = Date.now(); if (now - lastT < 90) return; lastT = now;
+          const cur = { x: a.x || 0, y: a.y || 0, z: a.z || 0 };
+          if (last) {
+            const d = Math.abs(cur.x - last.x) + Math.abs(cur.y - last.y) + Math.abs(cur.z - last.z);
+            if (d > 30) { hits = (now - hitAt < 800) ? hits + 1 : 1; hitAt = now; if (hits >= 3) { hits = 0; parade(); } }
+          }
+          last = cur;
+        });
+      };
+      if (typeof DeviceMotionEvent.requestPermission === "function") {
+        window.addEventListener("pointerup", function ask() {
+          DeviceMotionEvent.requestPermission().then((s) => { if (s === "granted") listen(); }).catch(() => {});
+        }, { once: true });
+      } else { listen(); }
+    }
+
+    // subtle footer hint → device-aware popover + a guaranteed "try it" button
+    const hintWrap = document.getElementById("eggHint");
+    if (hintWrap) {
+      const btn = hintWrap.querySelector(".egg-hint__btn");
+      const coarse = window.matchMedia("(pointer: coarse)").matches;
+      const lines = ["任意处连续点 5 下"];
+      if (coarse) lines.push("摇一摇你的手机 📱");
+      else { lines.push("输入 lobster 或 cjy"); lines.push("Konami：↑↑↓↓←→←→ B A"); }
+      const pop = document.createElement("div");
+      pop.className = "egg-hint__pop";
+      pop.innerHTML = `<h4>🦞 藏了几只小龙虾彩蛋</h4><ul>${lines.map((l) => `<li>· ${l}</li>`).join("")}</ul><button class="egg-hint__try" type="button">放一群虾出来 🦞</button>`;
+      hintWrap.appendChild(pop);
+      const setOpen = (o) => { pop.classList.toggle("is-open", o); btn.setAttribute("aria-expanded", String(o)); };
+      btn.addEventListener("click", (e) => { e.stopPropagation(); setOpen(!pop.classList.contains("is-open")); });
+      pop.querySelector(".egg-hint__try").addEventListener("click", (e) => { e.stopPropagation(); parade(); });
+      document.addEventListener("click", () => setOpen(false));
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") setOpen(false); });
+    }
+
     // console hello
     try {
       console.log("%c🦞 CJY · 陈俊烨 — Vibe Coder",
