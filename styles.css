@@ -227,7 +227,7 @@ mark {
 .hero__deco { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; display: none; }
 @media (min-width: 1080px) { .hero__deco { display: block; } }
 
-.seal { position: absolute; top: 12%; right: 5%; width: 158px; height: 158px; }
+.seal { position: absolute; bottom: 5%; right: 4%; width: 138px; height: 138px; }
 .seal__svg { width: 100%; height: 100%; animation: spin 24s linear infinite; }
 .seal__ring { fill: none; stroke: var(--ink); stroke-width: 2.5; }
 .seal__ring--thin { stroke-width: 1.4; }
@@ -241,10 +241,69 @@ mark {
 .doodle--spark2 { top: 64%; right: 3%; width: 22px; fill: var(--red); animation: twinkle 2.6s ease-in-out infinite .6s; }
 .doodle--arrow { top: 39%; right: 28%; width: 92px; opacity: .75; }
 .doodle--wave { top: 29%; right: 18%; width: 108px; color: var(--red); opacity: .85; animation: floaty 6s var(--ease) infinite reverse; }
-.doodle--ring { top: 71%; right: 25%; width: 56px; opacity: .5; animation: spin 30s linear infinite reverse; }
+.doodle--ring { display: none; }
 
 @keyframes floaty { 50% { transform: translateY(-12px) rotate(3deg); } }
 @keyframes twinkle { 0%, 100% { transform: scale(.7); opacity: .5; } 50% { transform: scale(1.12); opacity: 1; } }
+
+/* =====================================================================
+   极致小龙虾 — intro · ambient bubbles · hero focal · all-over accents
+   ===================================================================== */
+/* intro splash */
+.intro { position: fixed; inset: 0; z-index: 9999; background: var(--red); display: grid; place-items: center; overflow: hidden; }
+.intro.is-done { animation: introOut .6s var(--ease) forwards; }
+@keyframes introOut { to { transform: translateY(-100%); } }
+.intro__stage { text-align: center; }
+.intro__lob { display: block; font-size: clamp(5rem, 18vw, 11rem); line-height: 1; filter: drop-shadow(7px 7px 0 rgba(20,17,11,.4)); animation: introLob 1s var(--ease) both; }
+@keyframes introLob {
+  0% { transform: translateX(-72vw) rotate(-35deg) scale(.5); opacity: 0; }
+  55% { transform: translateX(4vw) rotate(10deg) scale(1.12); opacity: 1; }
+  75% { transform: translateX(-2vw) rotate(-4deg) scale(.98); }
+  100% { transform: none; opacity: 1; }
+}
+.intro__name { display: block; font-family: var(--black); font-size: clamp(2.6rem, 10vw, 5.5rem); color: var(--paper); -webkit-text-stroke: 2px var(--ink); text-shadow: 5px 5px 0 var(--ink); letter-spacing: -2px; margin-top: .12em; animation: introUp .5s .35s both var(--ease); }
+.intro__tag { display: block; font-family: var(--mono); font-weight: 700; letter-spacing: 4px; color: var(--ink); margin-top: .8rem; font-size: clamp(.78rem, 2.4vw, 1.05rem); animation: introUp .5s .5s both var(--ease); }
+@keyframes introUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+
+/* site-wide ambient bubbles */
+.ambient { position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden; }
+.ambient span {
+  position: absolute; bottom: -50px; border-radius: 50%;
+  border: 2px solid rgba(20,17,11,.09); background: rgba(255,77,28,.045);
+  animation: ambientRise linear infinite;
+}
+@keyframes ambientRise {
+  0% { transform: translateY(0) scale(.5); opacity: 0; }
+  12% { opacity: 1; } 86% { opacity: 1; }
+  100% { transform: translateY(calc(-100vh - 110px)) scale(1.1); opacity: 0; }
+}
+
+/* hero focal lobster */
+.hero__biglob {
+  position: absolute; top: 10%; right: -2%; z-index: -1; pointer-events: none; line-height: 1;
+  font-size: clamp(5.5rem, 20vw, 18rem); opacity: .92;
+  filter: drop-shadow(10px 10px 0 rgba(20,17,11,.18));
+  animation: lobFloat 6s var(--ease) infinite;
+}
+@keyframes lobFloat { 50% { transform: translateY(-22px) rotate(-6deg); } }
+
+/* hero quick-facts ("我的信息") */
+.hero__facts { display: flex; flex-wrap: wrap; gap: .55rem; margin: -.4rem 0 2rem; }
+.hero__facts li {
+  font-family: var(--mono); font-weight: 700; font-size: .82rem;
+  background: var(--paper-2); border: var(--bd-2); border-radius: 999px; padding: .42rem .9rem; box-shadow: var(--sh-sm);
+}
+.hero__facts li:nth-child(3) { background: var(--lime); }
+
+/* handwritten note + extra accents */
+.doodle--note { top: 33%; right: 16%; font-family: var(--cn); font-weight: 900; font-size: 1.3rem; color: var(--ink); transform: rotate(-8deg); white-space: nowrap; }
+.doodle--spark3 { top: 19%; right: 9%; width: 26px; fill: var(--lime); animation: twinkle 2.9s ease-in-out infinite .3s; }
+.doodle--swirl { top: 17%; right: 31%; width: 46px; opacity: .5; animation: spin 24s linear infinite; }
+
+/* all-over lobster accents */
+.section__num::after { content: " 🦞"; font-size: .34em; -webkit-text-stroke: 0; color: initial; vertical-align: super; margin-left: .12em; }
+.campus__list li { position: relative; padding: .85rem 0 .85rem 1.7rem; }
+.campus__list li::before { content: "🦞"; position: absolute; left: 0; top: .78rem; font-size: .85rem; }
 
 /* =====================================================================
    Section scaffolding
@@ -480,11 +539,13 @@ mark {
   pointer-events: none; opacity: 0; transition: opacity .25s var(--ease);
 }
 .lobtrail.is-on { opacity: 1; }
-.lobtrail__dot {
-  position: absolute; top: 0; left: 0; border-radius: 50%;
-  background: var(--red); will-change: transform;
+.lobtrail__dot, .lobtrail__star {
+  position: absolute; top: 0; left: 0; background: var(--red); will-change: transform;
 }
-.lobtrail__dot:nth-child(3n) { background: var(--lime); }
+.lobtrail__dot { border-radius: 50%; }
+.lobtrail__star {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
 .lobtrail__head {
   position: absolute; top: 0; left: 0; font-size: 26px; line-height: 1;
   will-change: transform; filter: drop-shadow(2px 2px 0 rgba(20,17,11,.4));
@@ -495,6 +556,7 @@ mark {
   transition: transform .46s cubic-bezier(.2,.8,.2,1), opacity .46s ease-out;
 }
 .lobtrail__pop--lime { background: var(--lime); }
+.lobtrail__pop--blue { background: var(--blue); }
 
 /* easter eggs: lobster swarm / rain / confetti / toast */
 .egg-layer { position: fixed; inset: 0; z-index: 9990; pointer-events: none; overflow: hidden; }

@@ -54,9 +54,20 @@
 </head>
 <body>
   <a class="skip-link" href="#top">跳到主要内容</a>
+
+  <!-- intro splash (once per session, skippable) -->
+  <div class="intro" id="intro" aria-hidden="true">
+    <div class="intro__stage">
+      <span class="intro__lob">🦞</span>
+      <span class="intro__name">CJY</span>
+      <span class="intro__tag">VIBE CODER · 陈俊烨</span>
+    </div>
+  </div>
+
   <div class="scroll-progress" id="scrollProgress"></div>
   <span class="scroll-lob" id="scrollLob" aria-hidden="true">🦞</span>
   <div class="bg-grid" aria-hidden="true"></div>
+  <div class="ambient" id="ambient" aria-hidden="true"></div>
   <span class="deco deco--star" aria-hidden="true">✦</span>
   <span class="deco deco--lobster" aria-hidden="true">🦞</span>
   <span class="deco deco--lobster2" aria-hidden="true">🦞</span>
@@ -91,6 +102,7 @@
   <main id="top">
     <!-- ============ HERO ============ -->
     <section class="hero" id="hero">
+      <span class="hero__biglob" aria-hidden="true">🦞</span>
       <span class="badge badge--eyebrow reveal" data-reveal>● 浙江工商大学 · 信电人工智能学院 · 研究生</span>
 
       <h1 class="hero__title">
@@ -108,6 +120,12 @@
         <b>AI 教育系统数字化</b> · <b>未来课堂探索</b> · <b>AI 多模态</b>。
         从想法到上线，把工程做扎实，把体验做有趣。
       </p>
+
+      <ul class="hero__facts reveal" data-reveal>
+        <li>📍 杭州 · 浙江工商大学</li>
+        <li>🟢 开放：黑客松 / 合作 / 交流</li>
+        <li>🦞 在养一窝 AI 小龙虾</li>
+      </ul>
 
       <div class="hero__actions reveal" data-reveal>
         <a class="btn btn--red" href="#projects">看看我的作品 →</a>
@@ -140,31 +158,16 @@
           <span class="seal__center">🦞</span>
         </div>
 
-        <!-- hand-drawn line lobster -->
-        <svg class="doodle doodle--lobster" viewBox="0 0 120 150">
-          <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M54 36 C42 20 32 13 22 7" />
-            <path d="M66 36 C78 20 88 13 98 7" />
-            <path d="M48 50 C36 47 28 50 22 58" />
-            <ellipse cx="16" cy="58" rx="9" ry="6" transform="rotate(-28 16 58)" />
-            <path d="M11 53 L20 60" />
-            <path d="M72 50 C84 47 92 50 98 58" />
-            <ellipse cx="104" cy="58" rx="9" ry="6" transform="rotate(28 104 58)" />
-            <path d="M109 53 L100 60" />
-            <ellipse cx="60" cy="78" rx="19" ry="30" />
-            <path d="M43 70 H77 M42 82 H78 M45 94 H75" />
-            <path d="M42 67 L31 62 M41 76 L29 77 M43 88 L32 92" />
-            <path d="M78 67 L89 62 M79 76 L91 77 M77 88 L88 92" />
-            <path d="M50 106 C52 122 56 130 60 136 C64 130 68 122 70 106" />
-            <path d="M60 108 V136 M54 114 Q49 127 51 134 M66 114 Q71 127 69 134" />
-          </g>
-        </svg>
+        <!-- handwritten note pointing at the name -->
+        <span class="doodle doodle--note">就是我 👈</span>
 
         <!-- accents -->
         <svg class="doodle doodle--spark1" viewBox="0 0 40 40"><path d="M20 0 C22 13 27 18 40 20 C27 22 22 27 20 40 C18 27 13 22 0 20 C13 18 18 13 20 0Z"/></svg>
         <svg class="doodle doodle--spark2" viewBox="0 0 40 40"><path d="M20 0 C22 13 27 18 40 20 C27 22 22 27 20 40 C18 27 13 22 0 20 C13 18 18 13 20 0Z"/></svg>
+        <svg class="doodle doodle--spark3" viewBox="0 0 40 40"><path d="M20 0 C22 13 27 18 40 20 C27 22 22 27 20 40 C18 27 13 22 0 20 C13 18 18 13 20 0Z"/></svg>
         <svg class="doodle doodle--arrow" viewBox="0 0 90 60"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M86 8 C60 2 22 6 6 34"/><path d="M6 34 L4 18 M6 34 L22 38"/></g></svg>
         <svg class="doodle doodle--wave" viewBox="0 0 120 24"><path d="M2 14 Q17 -2 32 12 T62 12 T92 12 T118 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+        <svg class="doodle doodle--swirl" viewBox="0 0 50 50"><path d="M25 25 a5 5 0 1 1 -5 5 a11 11 0 1 0 11 -11 a17 17 0 1 0 -17 17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
         <svg class="doodle doodle--ring" viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="3 8" stroke-linecap="round"/></svg>
       </div>
     </section>

@@ -10,6 +10,45 @@
   /* ---------- footer year ---------- */
   $("#year").textContent = new Date().getFullYear();
 
+  /* ---------- intro splash (once per session, skippable) ---------- */
+  const intro = $("#intro");
+  if (intro) {
+    let introed = false;
+    try { introed = sessionStorage.getItem("cjy-introed") === "1"; } catch (_) {}
+    if (reduceMotion || introed) {
+      intro.remove();
+    } else {
+      try { sessionStorage.setItem("cjy-introed", "1"); } catch (_) {}
+      document.body.style.overflow = "hidden";
+      let closed = false;
+      const finish = () => {
+        if (closed) return; closed = true;
+        intro.classList.add("is-done");
+        document.body.style.overflow = "";
+        setTimeout(() => intro.remove(), 650);
+        ["pointerdown", "keydown", "wheel", "touchstart"].forEach((e) => window.removeEventListener(e, finish));
+      };
+      const timer = setTimeout(finish, 1600);
+      ["pointerdown", "keydown", "wheel", "touchstart"].forEach((e) =>
+        window.addEventListener(e, () => { clearTimeout(timer); finish(); }, { passive: true }));
+    }
+  }
+
+  /* ---------- site-wide ambient bubbles ---------- */
+  const ambient = $("#ambient");
+  if (ambient && !reduceMotion) {
+    let html = "";
+    for (let i = 0; i < 14; i++) {
+      const size = 10 + Math.random() * 42;
+      const left = Math.random() * 100;
+      const dur = 14 + Math.random() * 16;
+      const delay = -Math.random() * dur;
+      html += `<span style="left:${left.toFixed(1)}%;width:${size | 0}px;height:${size | 0}px;` +
+              `animation-duration:${dur.toFixed(1)}s;animation-delay:${delay.toFixed(1)}s"></span>`;
+    }
+    ambient.innerHTML = html;
+  }
+
   /* ===================================================================
      Project data → cards
      =================================================================== */
@@ -317,14 +356,16 @@
     layer.className = "lobtrail";
     layer.setAttribute("aria-hidden", "true");
 
+    const TRAIL = ["#FF4D1C", "#C8FF2D", "#2B47F0"];   // lobster red · lime · electric blue
     const dots = [];
     for (let i = 0; i < N; i++) {
       const t = i / (N - 1);
       const d = document.createElement("span");
-      d.className = "lobtrail__dot";
-      const size = 11 - t * 8;                 // 11px → 3px
+      d.className = i % 2 ? "lobtrail__star" : "lobtrail__dot";   // alternate bubble / sparkle
+      const size = (i % 2 ? 13 : 11) - t * (i % 2 ? 9 : 8);
       d.style.width = d.style.height = `${size}px`;
-      d.style.opacity = (0.8 * (1 - t)).toFixed(2);
+      d.style.background = TRAIL[i % 3];
+      d.style.opacity = (0.85 * (1 - t)).toFixed(2);
       layer.appendChild(d);
       dots.push(d);
     }
@@ -363,8 +404,9 @@
         squish = 1 + Math.sin(pe * Math.PI * 2) * 0.28;
         snap   = Math.sin(pe * Math.PI * 2) * 0.22;
       }
+      const wob = Math.sin(performance.now() / 130) * 0.13;   // constant swim wiggle
       head.style.transform =
-        `translate(${hp.x}px, ${hp.y}px) translate(-50%, -50%) rotate(${tilt + snap}rad) scale(${scale}) scaleX(${facing * squish})`;
+        `translate(${hp.x}px, ${hp.y}px) translate(-50%, -50%) rotate(${tilt + snap + wob}rad) scale(${scale}) scaleX(${facing * squish})`;
       raf = requestAnimationFrame(loop);
     };
 
@@ -380,7 +422,7 @@
     const burst = (x, y) => {
       for (let k = 0; k < 7; k++) {
         const s = document.createElement("span");
-        s.className = "lobtrail__pop" + (k % 3 === 0 ? " lobtrail__pop--lime" : "");
+        s.className = "lobtrail__pop" + ["", " lobtrail__pop--lime", " lobtrail__pop--blue"][k % 3];
         s.style.transform = `translate(${x}px, ${y}px)`;
         layer.appendChild(s);
         const ang = (Math.PI * 2 * k) / 7 + Math.random() * 0.6;
