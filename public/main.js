@@ -524,26 +524,50 @@
       }
     };
 
-    // celebration poppers — lobsters + confetti launch UP, then float slowly
-    // back down so you can actually see each one (slow & lingering)
+    // celebration poppers — launch UP, then bounce on the "floor" with
+    // damped (ever-lower) hops, finally resting at the bottom for a beat
     const burstFrom = (originVw) => {
-      const N = reduceMotion ? 6 : (window.innerWidth < 640 ? 12 : 20);
+      const N = reduceMotion ? 6 : (window.innerWidth < 640 ? 7 : 11);
+      const UP = "cubic-bezier(.3,.72,.4,1)";    // decelerate (rising)
+      const DN = "cubic-bezier(.55,0,.78,.46)";  // accelerate (falling)
       for (let i = 0; i < N; i++) {
-        const isLob = Math.random() < 0.62;
+        const isLob = Math.random() < 0.66;
         const p = document.createElement("span");
-        if (isLob) { p.className = "egg-lob"; p.textContent = "🦞"; p.style.fontSize = `${rand(20, 50) | 0}px`; }
+        if (isLob) { p.className = "egg-lob"; p.textContent = "🦞"; p.style.fontSize = `${rand(20, 48) | 0}px`; }
         else { p.className = "egg-confetti"; p.style.background = PALETTE[(Math.random() * PALETTE.length) | 0]; }
         p.style.left = `${originVw}vw`; p.style.top = "100vh";
         eggLayer.appendChild(p);
-        const dx = rand(-36, 36), up = rand(52, 92), spin = rand(-540, 540);
-        const anim = p.animate([
-          { transform: "translate(0, 0) rotate(0deg)", opacity: 0, offset: 0 },
-          { opacity: 1, offset: 0.05 },
-          { transform: `translate(${(dx * 0.5) | 0}vw, ${-up}vh) rotate(${(spin * 0.5) | 0}deg)`, offset: 0.34 },
-          { opacity: 1, offset: 0.82 },
-          { transform: `translate(${dx | 0}vw, 18vh) rotate(${spin | 0}deg)`, opacity: 0, offset: 1 },
-        ], { duration: reduceMotion ? 2400 : rand(4200, 6400), delay: rand(0, 400), easing: "cubic-bezier(.18,.66,.32,1)", fill: "forwards" });
-        anim.onfinish = () => p.remove();
+
+        const dx = rand(-24, 24), g = +(rand(2, 7)).toFixed(1), tilt = rand(-22, 22) | 0;
+        const spin = (rand(220, 520) | 0) * (Math.random() < 0.5 ? -1 : 1);
+
+        if (reduceMotion) {
+          const a = p.animate([
+            { transform: "translate(0,0)", opacity: 0 },
+            { transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, opacity: 1, offset: 0.3 },
+            { transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, opacity: 1, offset: 0.85 },
+            { transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, opacity: 0 },
+          ], { duration: 3000, fill: "forwards" });
+          a.onfinish = () => p.remove();
+          continue;
+        }
+
+        const L = rand(48, 80), b1 = g + L * 0.26, b2 = g + L * 0.11, b3 = g + L * 0.045;  // hops get lower
+        const a = p.animate([
+          { offset: 0,    transform: "translate(0vw, 0vh) rotate(0deg)", opacity: 0, easing: UP },
+          { offset: 0.03, transform: `translate(${(dx * .2) | 0}vw, -${(L * .26) | 0}vh) rotate(${(spin * .12) | 0}deg)`, opacity: 1, easing: UP },
+          { offset: 0.16, transform: `translate(${(dx * .5) | 0}vw, -${L | 0}vh) rotate(${(spin * .42) | 0}deg)`, easing: DN },   // launch peak
+          { offset: 0.30, transform: `translate(${(dx * .72) | 0}vw, -${g}vh) rotate(${(spin * .6) | 0}deg)`, easing: UP },        // floor
+          { offset: 0.39, transform: `translate(${(dx * .82) | 0}vw, -${b1 | 0}vh) rotate(${(spin * .72) | 0}deg)`, easing: DN },  // hop 1
+          { offset: 0.47, transform: `translate(${(dx * .9) | 0}vw, -${g}vh) rotate(${(spin * .82) | 0}deg)`, easing: UP },        // floor
+          { offset: 0.53, transform: `translate(${(dx * .95) | 0}vw, -${b2 | 0}vh) rotate(${(spin * .9) | 0}deg)`, easing: DN },   // hop 2
+          { offset: 0.58, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${(spin * .96) | 0}deg)`, easing: UP },               // floor
+          { offset: 0.62, transform: `translate(${dx | 0}vw, -${b3 | 0}vh) rotate(${tilt}deg)`, easing: DN },                      // hop 3 (settling)
+          { offset: 0.66, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, easing: "linear" },                     // rest
+          { offset: 0.93, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, opacity: 1, easing: "linear" },         // stay a beat
+          { offset: 1,    transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, opacity: 0 },                           // fade
+        ], { duration: rand(6800, 9000) | 0, delay: rand(0, 350) | 0, fill: "forwards" });
+        a.onfinish = () => p.remove();
       }
     };
 
@@ -551,11 +575,11 @@
     let celebrated = false;
     const celebrate = () => {
       if (celebrated) return; celebrated = true;
-      toast("🦞 恭喜你看完整了！谢谢你读到这里 ❤️", 7500);
+      toast("🦞 恭喜你看完整了！谢谢你读到这里 ❤️", 8500);
       const small = window.innerWidth < 640;
       const waves = reduceMotion ? [[50, 0]]
-        : small ? [[16, 0], [84, 600], [50, 1300], [26, 2100], [74, 2900]]
-                : [[12, 0], [88, 450], [50, 1000], [28, 1800], [72, 2500], [40, 3300], [60, 4000]];
+        : small ? [[18, 0], [82, 650], [50, 1500], [40, 2400]]
+                : [[12, 0], [88, 500], [50, 1100], [30, 1900], [70, 2600], [50, 3300]];
       waves.forEach(([vw, t]) => setTimeout(() => burstFrom(vw), t));
     };
     const atBottom = () => (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
