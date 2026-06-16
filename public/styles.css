@@ -305,6 +305,29 @@ mark {
 .campus__list li { position: relative; padding: .85rem 0 .85rem 1.7rem; }
 .campus__list li::before { content: "🦞"; position: absolute; left: 0; top: .78rem; font-size: .85rem; }
 
+/* hero bottom-right cluster — vibe-coder code card + lobster + sticker */
+.doodle--code {
+  top: 60%; right: 4%; width: max-content;
+  background: var(--ink); color: var(--paper); border: var(--bd); border-radius: 12px; box-shadow: var(--sh);
+  padding: .8rem 1.05rem .7rem; transform: rotate(2.5deg);
+  font-family: var(--mono); font-weight: 700; font-size: .8rem; line-height: 1.6;
+}
+.codecard__dots { display: flex; gap: 5px; margin-bottom: .5rem; }
+.codecard__dots i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--paper); }
+.codecard__dots i:nth-child(1) { background: var(--red); }
+.codecard__dots i:nth-child(2) { background: var(--lime); }
+.codecard__dots i:nth-child(3) { background: var(--blue); }
+.doodle--code pre { margin: 0; font: inherit; }
+.doodle--code .ck { color: var(--lime); }
+.doodle--code .cf { color: var(--pink); }
+.doodle--sticker {
+  top: 80%; right: 23%; font-family: var(--cn); font-weight: 700; font-size: .9rem; color: var(--ink);
+  background: var(--lime); border: var(--bd-2); border-radius: 999px; padding: .42rem .9rem; box-shadow: var(--sh-sm);
+  transform: rotate(-4deg); white-space: nowrap;
+}
+.doodle--lobmini { top: 70%; right: 15%; font-size: 2.6rem; transform: rotate(-14deg); opacity: .92; filter: drop-shadow(3px 3px 0 rgba(20,17,11,.2)); }
+.doodle--spark4 { top: 55%; right: 28%; width: 22px; fill: var(--red); animation: twinkle 3.1s ease-in-out infinite .5s; }
+
 /* =====================================================================
    Section scaffolding
    ===================================================================== */
