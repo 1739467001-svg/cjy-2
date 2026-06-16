@@ -469,12 +469,12 @@
     const PALETTE = ["#FF4D1C", "#2B47F0", "#C8FF2D", "#FF5DA2", "#14110B"];
 
     let toastTimer;
-    const toast = (msg) => {
+    const toast = (msg, hold = 2600) => {
       let el = eggLayer.querySelector(".egg-toast");
       if (!el) { el = document.createElement("div"); el.className = "egg-toast"; eggLayer.appendChild(el); }
       el.textContent = msg; el.classList.add("is-show");
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.classList.remove("is-show"), 2600);
+      toastTimer = setTimeout(() => el.classList.remove("is-show"), hold);
     };
 
     // lobster parade — swim across horizontally with a gentle bob
@@ -504,21 +504,22 @@
       setTimeout(() => { paradeBusy = false; }, 7000);
     };
 
-    // lobster rain + confetti
+    // lobster rain + confetti — the "ultimate": more, bigger, and longer
     const rain = () => {
-      toast("🦞 KONAMI! 龙虾雨 🎉");
-      const N = reduceMotion ? 12 : 44;
+      const N = reduceMotion ? 16 : 110;
+      const maxDelay = reduceMotion ? 400 : 5200;   // spread the downpour out over time
+      toast("🦞 KONAMI! 龙虾雨 · 大招！🎉", reduceMotion ? 2600 : 8500);
       for (let i = 0; i < N; i++) {
-        const isLob = Math.random() < 0.55;
+        const isLob = Math.random() < 0.6;
         const p = document.createElement("span");
-        if (isLob) { p.className = "egg-lob"; p.textContent = "🦞"; p.style.fontSize = `${rand(18, 42) | 0}px`; }
+        if (isLob) { p.className = "egg-lob"; p.textContent = "🦞"; p.style.fontSize = `${rand(18, 56) | 0}px`; }
         else { p.className = "egg-confetti"; p.style.background = PALETTE[(Math.random() * PALETTE.length) | 0]; }
         p.style.left = `${rand(0, 100).toFixed(1)}vw`;
         eggLayer.appendChild(p);
         const anim = p.animate([
-          { transform: "translateY(-12vh) translateX(0) rotate(0deg)", opacity: 1 },
-          { transform: `translateY(112vh) translateX(${rand(-12, 12).toFixed(1)}vw) rotate(${rand(-720, 720) | 0}deg)`, opacity: 1 },
-        ], { duration: reduceMotion ? 1200 : rand(2200, 4400), delay: rand(0, 900), easing: "cubic-bezier(.35,.1,.5,1)", fill: "forwards" });
+          { transform: "translateY(-14vh) translateX(0) rotate(0deg)", opacity: 1 },
+          { transform: `translateY(114vh) translateX(${rand(-14, 14).toFixed(1)}vw) rotate(${rand(-900, 900) | 0}deg)`, opacity: 1 },
+        ], { duration: reduceMotion ? 1300 : rand(2600, 5200), delay: reduceMotion ? (i / N) * maxDelay : rand(0, maxDelay), easing: "cubic-bezier(.35,.1,.5,1)", fill: "forwards" });
         anim.onfinish = () => p.remove();
       }
     };
