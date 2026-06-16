@@ -387,6 +387,24 @@ mark {
 .footer__copy { opacity: .8; }
 
 /* =====================================================================
+   Lobster cursor trail 🦞
+   ===================================================================== */
+.lobtrail {
+  position: fixed; inset: 0; z-index: 9998; overflow: hidden;
+  pointer-events: none; opacity: 0; transition: opacity .25s var(--ease);
+}
+.lobtrail.is-on { opacity: 1; }
+.lobtrail__dot {
+  position: absolute; top: 0; left: 0; border-radius: 50%;
+  background: var(--red); will-change: transform;
+}
+.lobtrail__dot:nth-child(3n) { background: var(--lime); }
+.lobtrail__head {
+  position: absolute; top: 0; left: 0; font-size: 26px; line-height: 1;
+  will-change: transform; filter: drop-shadow(2px 2px 0 rgba(20,17,11,.4));
+}
+
+/* =====================================================================
    Reveal
    ===================================================================== */
 .reveal { opacity: 0; transform: translateY(34px) scale(.97); transition: opacity .6s var(--ease), transform .6s var(--ease); }

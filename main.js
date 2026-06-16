@@ -255,4 +255,79 @@
   navLinks?.addEventListener("click", (e) => {
     if (e.target.tagName === "A") { navLinks.classList.remove("is-open"); burger.setAttribute("aria-expanded", "false"); }
   });
+
+  /* ===================================================================
+     Lobster cursor trail 🦞 — the signature touch
+     A little lobster swims just behind the pointer, dragging a tail of
+     lobster-red bubbles that whips around as you move. Native cursor is
+     kept (so links/clicks behave); this is a pointer-events-none overlay.
+     Desktop fine-pointer only; skipped under reduced-motion.
+     =================================================================== */
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (finePointer && !reduceMotion) {
+    const N = 15;
+    const layer = document.createElement("div");
+    layer.className = "lobtrail";
+    layer.setAttribute("aria-hidden", "true");
+
+    const dots = [];
+    for (let i = 0; i < N; i++) {
+      const t = i / (N - 1);
+      const d = document.createElement("span");
+      d.className = "lobtrail__dot";
+      const size = 11 - t * 8;                 // 11px → 3px
+      d.style.width = d.style.height = `${size}px`;
+      d.style.opacity = (0.8 * (1 - t)).toFixed(2);
+      layer.appendChild(d);
+      dots.push(d);
+    }
+    const head = document.createElement("div");
+    head.className = "lobtrail__head";
+    head.textContent = "🦞";
+    layer.appendChild(head);
+    document.body.appendChild(layer);
+
+    // chain: pts[0] chases the cursor; each following point chases the prior
+    const pts = Array.from({ length: N }, () => ({ x: innerWidth / 2, y: innerHeight / 2 }));
+    const mouse = { x: innerWidth / 2, y: innerHeight / 2 };
+    let active = false, raf = 0;
+
+    const loop = () => {
+      pts[0].x += (mouse.x - pts[0].x) * 0.34;
+      pts[0].y += (mouse.y - pts[0].y) * 0.34;
+      for (let i = 1; i < N; i++) {
+        pts[i].x += (pts[i - 1].x - pts[i].x) * 0.42;
+        pts[i].y += (pts[i - 1].y - pts[i].y) * 0.42;
+      }
+      for (let i = 0; i < N; i++) {
+        dots[i].style.transform = `translate(${pts[i].x}px, ${pts[i].y}px) translate(-50%, -50%)`;
+      }
+      // lobster rides a few segments back and banks toward its heading
+      const hp = pts[3], ref = pts[7];
+      const vx = hp.x - ref.x, vy = hp.y - ref.y;
+      const facing = vx >= 0 ? -1 : 1;          // 🦞 faces left by default; flip to face travel
+      const tilt = Math.max(-0.4, Math.min(0.4, vy * 0.012));
+      head.style.transform =
+        `translate(${hp.x}px, ${hp.y}px) translate(-50%, -50%) rotate(${tilt}rad) scaleX(${facing})`;
+      raf = requestAnimationFrame(loop);
+    };
+
+    const onMove = (e) => {
+      mouse.x = e.clientX; mouse.y = e.clientY;
+      if (!active) {
+        active = true;
+        pts.forEach((p) => { p.x = mouse.x; p.y = mouse.y; });
+        layer.classList.add("is-on");
+        loop();
+      }
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerdown", onMove, { passive: true });
+    document.addEventListener("mouseleave", () => layer.classList.remove("is-on"));
+    document.addEventListener("mouseenter", () => active && layer.classList.add("is-on"));
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) { cancelAnimationFrame(raf); }
+      else if (active) { loop(); }
+    });
+  }
 })();
