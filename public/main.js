@@ -524,22 +524,25 @@
       }
     };
 
-    // celebration poppers — lobsters + confetti shoot UP from the bottom
+    // celebration poppers — lobsters + confetti launch UP, then float slowly
+    // back down so you can actually see each one (slow & lingering)
     const burstFrom = (originVw) => {
-      const N = reduceMotion ? 8 : (window.innerWidth < 640 ? 20 : 40);
+      const N = reduceMotion ? 6 : (window.innerWidth < 640 ? 12 : 20);
       for (let i = 0; i < N; i++) {
-        const isLob = Math.random() < 0.6;
+        const isLob = Math.random() < 0.62;
         const p = document.createElement("span");
-        if (isLob) { p.className = "egg-lob"; p.textContent = "🦞"; p.style.fontSize = `${rand(16, 40) | 0}px`; }
+        if (isLob) { p.className = "egg-lob"; p.textContent = "🦞"; p.style.fontSize = `${rand(20, 50) | 0}px`; }
         else { p.className = "egg-confetti"; p.style.background = PALETTE[(Math.random() * PALETTE.length) | 0]; }
         p.style.left = `${originVw}vw`; p.style.top = "100vh";
         eggLayer.appendChild(p);
-        const dx = rand(-42, 42), up = rand(48, 96), spin = rand(-900, 900);
+        const dx = rand(-36, 36), up = rand(52, 92), spin = rand(-540, 540);
         const anim = p.animate([
-          { transform: "translate(0, 0) rotate(0deg)", opacity: 1, offset: 0 },
-          { transform: `translate(${(dx * 0.6).toFixed(0)}vw, ${-up}vh) rotate(${(spin * 0.6) | 0}deg)`, opacity: 1, offset: 0.55 },
-          { transform: `translate(${dx.toFixed(0)}vw, ${-(up * 0.5).toFixed(0)}vh) rotate(${spin | 0}deg)`, opacity: 0, offset: 1 },
-        ], { duration: reduceMotion ? 1400 : rand(1700, 2700), delay: rand(0, 250), easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" });
+          { transform: "translate(0, 0) rotate(0deg)", opacity: 0, offset: 0 },
+          { opacity: 1, offset: 0.05 },
+          { transform: `translate(${(dx * 0.5) | 0}vw, ${-up}vh) rotate(${(spin * 0.5) | 0}deg)`, offset: 0.34 },
+          { opacity: 1, offset: 0.82 },
+          { transform: `translate(${dx | 0}vw, 18vh) rotate(${spin | 0}deg)`, opacity: 0, offset: 1 },
+        ], { duration: reduceMotion ? 2400 : rand(4200, 6400), delay: rand(0, 400), easing: "cubic-bezier(.18,.66,.32,1)", fill: "forwards" });
         anim.onfinish = () => p.remove();
       }
     };
@@ -548,12 +551,12 @@
     let celebrated = false;
     const celebrate = () => {
       if (celebrated) return; celebrated = true;
-      toast("🦞 恭喜你看完整了！谢谢你读到这里 ❤️", 5200);
-      [12, 50, 88].forEach((vw, k) => setTimeout(() => burstFrom(vw), k * 240));
-      if (!reduceMotion && window.innerWidth >= 640) {
-        setTimeout(() => burstFrom(30), 820);
-        setTimeout(() => burstFrom(70), 1000);
-      }
+      toast("🦞 恭喜你看完整了！谢谢你读到这里 ❤️", 7500);
+      const small = window.innerWidth < 640;
+      const waves = reduceMotion ? [[50, 0]]
+        : small ? [[16, 0], [84, 600], [50, 1300], [26, 2100], [74, 2900]]
+                : [[12, 0], [88, 450], [50, 1000], [28, 1800], [72, 2500], [40, 3300], [60, 4000]];
+      waves.forEach(([vw, t]) => setTimeout(() => burstFrom(vw), t));
     };
     const atBottom = () => (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
     const watchBottom = () => { if (atBottom()) { celebrate(); window.removeEventListener("scroll", watchBottom); } };
