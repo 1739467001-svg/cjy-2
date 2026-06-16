@@ -524,6 +524,41 @@
       }
     };
 
+    // celebration poppers — lobsters + confetti shoot UP from the bottom
+    const burstFrom = (originVw) => {
+      const N = reduceMotion ? 8 : (window.innerWidth < 640 ? 20 : 40);
+      for (let i = 0; i < N; i++) {
+        const isLob = Math.random() < 0.6;
+        const p = document.createElement("span");
+        if (isLob) { p.className = "egg-lob"; p.textContent = "🦞"; p.style.fontSize = `${rand(16, 40) | 0}px`; }
+        else { p.className = "egg-confetti"; p.style.background = PALETTE[(Math.random() * PALETTE.length) | 0]; }
+        p.style.left = `${originVw}vw`; p.style.top = "100vh";
+        eggLayer.appendChild(p);
+        const dx = rand(-42, 42), up = rand(48, 96), spin = rand(-900, 900);
+        const anim = p.animate([
+          { transform: "translate(0, 0) rotate(0deg)", opacity: 1, offset: 0 },
+          { transform: `translate(${(dx * 0.6).toFixed(0)}vw, ${-up}vh) rotate(${(spin * 0.6) | 0}deg)`, opacity: 1, offset: 0.55 },
+          { transform: `translate(${dx.toFixed(0)}vw, ${-(up * 0.5).toFixed(0)}vh) rotate(${spin | 0}deg)`, opacity: 0, offset: 1 },
+        ], { duration: reduceMotion ? 1400 : rand(1700, 2700), delay: rand(0, 250), easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" });
+        anim.onfinish = () => p.remove();
+      }
+    };
+
+    // surprise: fully scrolled to the bottom → "thanks for reading it all"
+    let celebrated = false;
+    const celebrate = () => {
+      if (celebrated) return; celebrated = true;
+      toast("🦞 恭喜你看完整了！谢谢你读到这里 ❤️", 5200);
+      [12, 50, 88].forEach((vw, k) => setTimeout(() => burstFrom(vw), k * 240));
+      if (!reduceMotion && window.innerWidth >= 640) {
+        setTimeout(() => burstFrom(30), 820);
+        setTimeout(() => burstFrom(70), 1000);
+      }
+    };
+    const atBottom = () => (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
+    const watchBottom = () => { if (atBottom()) { celebrate(); window.removeEventListener("scroll", watchBottom); } };
+    window.addEventListener("scroll", watchBottom, { passive: true });
+
     // trigger: 5 rapid clicks
     let clicks = 0, clickTimer;
     window.addEventListener("pointerdown", () => {

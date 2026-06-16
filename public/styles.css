@@ -586,7 +586,8 @@ mark {
 .egg-lob { position: fixed; left: 0; top: 0; line-height: 1; will-change: transform, opacity; filter: drop-shadow(2px 2px 0 rgba(20,17,11,.35)); }
 .egg-confetti { position: fixed; top: 0; left: 0; width: 12px; height: 15px; border: 2px solid var(--ink); border-radius: 3px; will-change: transform; }
 .egg-toast {
-  position: fixed; left: 50%; top: 86px; z-index: 9991; white-space: nowrap;
+  position: fixed; left: 50%; top: 86px; z-index: 9991;
+  max-width: min(92vw, 560px); text-align: center; line-height: 1.45;
   background: var(--lime); color: var(--ink); border: var(--bd); border-radius: 14px; box-shadow: var(--sh);
   font-family: var(--cn); font-weight: 700; font-size: 1rem; padding: .7rem 1.2rem;
   opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(-14px) rotate(-1.5deg);
