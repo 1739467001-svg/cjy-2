@@ -1,0 +1,15 @@
+{
+  "name": "CJY · 陈俊烨 — Vibe Coder",
+  "short_name": "CJY 🦞",
+  "description": "Vibe Coder · AI 教育系统数字化 · 未来课堂探索 · AI 多模态",
+  "lang": "zh-CN",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F7F2E4",
+  "theme_color": "#F7F2E4",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -17,6 +17,7 @@
   打字机角色轮播、数字滚动计数、硬投影悬停交互。
 - **三端适配**：桌面 / 平板 / 手机自适应协同，含移动端汉堡菜单；超宽屏才显示 hero 手绘装饰，避免小屏拥挤。
 - **无障碍友好**：语义化标签、「跳到主要内容」跳转链接、`:focus-visible` 键盘焦点高亮、`prefers-reduced-motion` 全面降级。
+- **分享 / SEO / PWA**：Open Graph + Twitter 大图分享卡（`og.png`）、JSON-LD `Person` 结构化数据、可「添加到主屏」的 `site.webmanifest` 与龙虾图标。
 
 ## 🥚 彩蛋
 
@@ -33,9 +34,13 @@
 ## 📁 结构
 
 ```
-index.html    页面结构与内容
-styles.css    野兽派设计系统（配色 / 边框 / 投影 / 排版 / 响应式）
-main.js       交互逻辑、项目与时间轴数据
+index.html          页面结构、内容与 <head> 元信息（OG / Twitter / JSON-LD）
+styles.css          野兽派设计系统（配色 / 边框 / 投影 / 排版 / 响应式）
+main.js             交互逻辑、项目与时间轴数据、彩蛋
+og.png              1200×630 社交分享大图
+icon-192/512.png    PWA 图标（apple-touch-icon.png 为 iOS 主屏图标）
+site.webmanifest    PWA 清单
+tools/              分享图与图标的生成源（og.html / _icon.html，用浏览器截图导出）
 ```
 
 ## 🚀 本地预览
