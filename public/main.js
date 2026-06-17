@@ -555,18 +555,18 @@
         const L = rand(48, 80), b1 = g + L * 0.26, b2 = g + L * 0.11, b3 = g + L * 0.045;  // hops get lower
         const a = p.animate([
           { offset: 0,    transform: "translate(0vw, 0vh) rotate(0deg)", opacity: 0, easing: UP },
-          { offset: 0.03, transform: `translate(${(dx * .2) | 0}vw, -${(L * .26) | 0}vh) rotate(${(spin * .12) | 0}deg)`, opacity: 1, easing: UP },
-          { offset: 0.16, transform: `translate(${(dx * .5) | 0}vw, -${L | 0}vh) rotate(${(spin * .42) | 0}deg)`, easing: DN },   // launch peak
-          { offset: 0.30, transform: `translate(${(dx * .72) | 0}vw, -${g}vh) rotate(${(spin * .6) | 0}deg)`, easing: UP },        // floor
-          { offset: 0.39, transform: `translate(${(dx * .82) | 0}vw, -${b1 | 0}vh) rotate(${(spin * .72) | 0}deg)`, easing: DN },  // hop 1
-          { offset: 0.47, transform: `translate(${(dx * .9) | 0}vw, -${g}vh) rotate(${(spin * .82) | 0}deg)`, easing: UP },        // floor
-          { offset: 0.53, transform: `translate(${(dx * .95) | 0}vw, -${b2 | 0}vh) rotate(${(spin * .9) | 0}deg)`, easing: DN },   // hop 2
-          { offset: 0.58, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${(spin * .96) | 0}deg)`, easing: UP },               // floor
-          { offset: 0.62, transform: `translate(${dx | 0}vw, -${b3 | 0}vh) rotate(${tilt}deg)`, easing: DN },                      // hop 3 (settling)
-          { offset: 0.66, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, easing: "linear" },                     // rest
-          { offset: 0.93, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, opacity: 1, easing: "linear" },         // stay a beat
+          { offset: 0.02, transform: `translate(${(dx * .2) | 0}vw, -${(L * .26) | 0}vh) rotate(${(spin * .12) | 0}deg)`, opacity: 1, easing: UP },
+          { offset: 0.12, transform: `translate(${(dx * .5) | 0}vw, -${L | 0}vh) rotate(${(spin * .42) | 0}deg)`, easing: DN },   // launch peak
+          { offset: 0.23, transform: `translate(${(dx * .72) | 0}vw, -${g}vh) rotate(${(spin * .6) | 0}deg)`, easing: UP },        // floor
+          { offset: 0.30, transform: `translate(${(dx * .82) | 0}vw, -${b1 | 0}vh) rotate(${(spin * .72) | 0}deg)`, easing: DN },  // hop 1
+          { offset: 0.37, transform: `translate(${(dx * .9) | 0}vw, -${g}vh) rotate(${(spin * .82) | 0}deg)`, easing: UP },        // floor
+          { offset: 0.42, transform: `translate(${(dx * .95) | 0}vw, -${b2 | 0}vh) rotate(${(spin * .9) | 0}deg)`, easing: DN },   // hop 2
+          { offset: 0.46, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${(spin * .96) | 0}deg)`, easing: UP },               // floor
+          { offset: 0.49, transform: `translate(${dx | 0}vw, -${b3 | 0}vh) rotate(${tilt}deg)`, easing: DN },                      // hop 3 (settling)
+          { offset: 0.52, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, easing: "linear" },                     // settle on floor
+          { offset: 0.92, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, opacity: 1, easing: "linear" },         // rest — lingers a while
           { offset: 1,    transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, opacity: 0 },                           // fade
-        ], { duration: rand(6800, 9000) | 0, delay: rand(0, 350) | 0, fill: "forwards" });
+        ], { duration: rand(8500, 11000) | 0, delay: rand(0, 350) | 0, fill: "forwards" });
         a.onfinish = () => p.remove();
       }
     };
@@ -575,7 +575,7 @@
     let celebrated = false;
     const celebrate = () => {
       if (celebrated) return; celebrated = true;
-      toast("🦞 恭喜你看完整了！谢谢你读到这里 ❤️", 8500);
+      toast("🦞 恭喜你看完整了！谢谢你读到这里 ❤️", 9500);
       const small = window.innerWidth < 640;
       const waves = reduceMotion ? [[50, 0]]
         : small ? [[18, 0], [82, 650], [50, 1500], [40, 2400]]
