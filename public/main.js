@@ -941,12 +941,11 @@
       document.addEventListener("keydown", (e) => { if (e.key === "Escape") setOpen(false); });
     }
 
-    // hidden trigger: poke the big hero lobster to feed the tank
+    // feed the tank: the wiggling hero "bait" (the obvious one) + poking the big lobster
     const bigLob = document.querySelector(".hero__biglob");
-    if (bigLob) {
-      bigLob.title = "戳我喂虾 🍤";
-      bigLob.addEventListener("click", () => feed());
-    }
+    if (bigLob) { bigLob.title = "戳我喂虾 🍤"; bigLob.addEventListener("click", () => feed()); }
+    const bait = document.querySelector(".hero__bait");
+    if (bait) bait.addEventListener("click", () => feed());
 
     // console hello
     try {

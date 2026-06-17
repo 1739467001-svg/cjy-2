@@ -287,6 +287,37 @@ mark {
 }
 @keyframes lobFloat { 50% { transform: translateY(-22px) rotate(-6deg); } }
 
+/* feeding "bait" — a wiggling lure under the hero lobster that begs to be clicked */
+.hero__bait {
+  position: absolute; top: 38%; right: 3%; z-index: 6;
+  display: inline-flex; align-items: center; gap: .36rem;
+  font-family: var(--cn); font-weight: 900; font-size: 1rem; line-height: 1; white-space: nowrap;
+  color: var(--ink); background: var(--lime); border: var(--bd); border-radius: 999px;
+  padding: .58rem 1rem .6rem; cursor: pointer; box-shadow: var(--sh-sm);
+  animation: baitBob 1.3s ease-in-out infinite;
+  transition: background .15s var(--ease), color .15s var(--ease), box-shadow .15s var(--ease), transform .12s var(--ease);
+}
+.hero__bait::after {                 /* a little caret tying it back up to the lobster */
+  content: ""; position: absolute; left: 50%; top: -11px; margin-left: -7px;
+  border: 7px solid transparent; border-bottom-color: var(--ink);
+}
+.hero__bait::before {                /* attention pulse ring */
+  content: ""; position: absolute; inset: -4px; border-radius: 999px; border: 2.5px solid var(--red);
+  opacity: 0; animation: baitPulse 1.8s ease-out infinite;
+}
+.hero__bait:hover, .hero__bait:focus-visible {
+  animation-play-state: paused; transform: translateY(-3px) rotate(0deg);
+  background: var(--red); color: var(--paper); box-shadow: 6px 6px 0 var(--ink);
+}
+.hero__bait:active { transform: translateY(0) scale(.95); box-shadow: var(--sh-sm); }
+@keyframes baitBob  { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-4px) rotate(5deg); } }
+@keyframes baitPulse { 0% { opacity: .5; transform: scale(1); } 100% { opacity: 0; transform: scale(1.55); } }
+/* mobile: the title fills the space under the lobster, so collapse the lure to a round 🍤 */
+@media (max-width: 760px) {
+  .hero__bait { top: 15.5%; right: 2%; gap: 0; padding: 0; width: 44px; height: 44px; justify-content: center; font-size: 1.3rem; }
+  .hero__bait-txt { display: none; }
+}
+
 /* hero quick-facts ("我的信息") */
 .hero__facts { display: flex; flex-wrap: wrap; gap: .55rem; margin: -.4rem 0 2rem; }
 .hero__facts li {
