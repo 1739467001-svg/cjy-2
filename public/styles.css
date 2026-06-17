@@ -426,6 +426,11 @@ mark {
 /* swaying seaweed — turns the page into an ecosystem tank 🌿 */
 .weed {
   position: absolute; bottom: 0; transform-origin: 50% 100%;
+  transform: rotate(var(--push, 0deg)); transition: transform .5s var(--ease);
+  will-change: transform;
+}
+.weed > i {                       /* inner blade carries the idle sway; outer takes the cursor "push" */
+  display: block; transform-origin: 50% 100%;
   animation: sway var(--sd, 6s) ease-in-out var(--sdl, 0s) infinite alternate;
   will-change: transform;
 }
@@ -434,11 +439,51 @@ mark {
   from { transform: rotate(calc(-1 * var(--amp, 4deg))); }
   to   { transform: rotate(var(--amp, 4deg)); }
 }
+/* substrate — the gravel/pebbles the plants root into */
+.pebble {
+  position: absolute; bottom: -3px; border: var(--bd-2);
+  border-radius: 60% 58% 46% 50% / 70% 66% 40% 40%;
+  box-shadow: inset -2px -3px 0 rgba(20,17,11,.14);
+}
 /* flora rooted at the bottom of the ecosystem panel (behind the cards) */
 .flora  { position: absolute; left: 0; right: 0; bottom: -2px; height: 0; z-index: 0; pointer-events: none; }
 /* site-wide "tank floor" flora — faint, hugs the bottom corners of every screen */
 .seabed { position: fixed;  left: 0; right: 0; bottom: 0;  height: 0; z-index: -2; pointer-events: none; overflow-x: clip; overflow-y: visible; }
-@media (prefers-reduced-motion: reduce) { .weed { animation: none; } }
+
+/* god rays — soft light shafts slanting down through the water (ecosystem panel) */
+.godrays { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; mix-blend-mode: screen; border-radius: inherit; }
+.godrays i {
+  position: absolute; top: -12%; left: var(--x, 20%); width: var(--w, 90px); height: 130%;
+  background: linear-gradient(to bottom, rgba(255,255,255,.55), rgba(255,255,255,0) 70%);
+  transform: skewX(var(--sk, -16deg)); filter: blur(8px); opacity: var(--o, .12);
+  animation: ray var(--rd, 9s) ease-in-out var(--rdl, 0s) infinite alternate;
+}
+@keyframes ray {
+  from { opacity: calc(var(--o, .12) * .4); transform: skewX(var(--sk)) translateX(-14px) scaleY(.98); }
+  to   { opacity: var(--o, .12);            transform: skewX(var(--sk)) translateX(14px)  scaleY(1.02); }
+}
+
+/* drifting fish — extra life roaming the tank, darting away from the cursor */
+.critters { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.fish { position: absolute; left: 0; top: 0; will-change: transform; }
+.fish svg { display: block; }
+
+/* feeding scene 🍤 — sinking food, pursuing lobsters, rising disturbance bubbles */
+.egg-food {
+  position: fixed; top: 0; left: 0; width: 11px; height: 11px; border-radius: 50%;
+  border: 2px solid var(--ink); background: var(--red); box-shadow: 2px 2px 0 rgba(20,17,11,.22);
+  will-change: transform, opacity;
+}
+.egg-feedlob { position: fixed; left: 0; top: 0; line-height: 1; will-change: transform; filter: drop-shadow(2px 2px 0 rgba(20,17,11,.35)); }
+.egg-rise {
+  position: fixed; top: 0; left: 0; border-radius: 50%;
+  border: 2px solid rgba(20,17,11,.45); background: rgba(255,255,255,.16);
+  will-change: transform, opacity;
+}
+.egg-hint__try--feed { background: var(--lime); color: var(--ink); margin-top: .45rem; }
+.hero__biglob { cursor: pointer; pointer-events: auto; }
+
+@media (prefers-reduced-motion: reduce) { .weed > i, .godrays i { animation: none; } }
 
 /* "raise a lobster" methodology flow */
 .lobflow { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: 0 0 1.9rem; position: relative; z-index: 1; }

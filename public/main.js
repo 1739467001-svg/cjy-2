@@ -202,15 +202,15 @@
     return `<svg width="${vbW}" height="${h | 0}" viewBox="${vbX} 0 ${vbW} ${h | 0}">` +
            `<path d="${d}" fill="${fill}" ${st}/></svg>`;
   };
-  // a field of blades → HTML string
+  const edgeLeft = (edge) => {                              // cluster a position into the two bottom corners
+    const r = Math.random() * edge;
+    return Math.random() < 0.5 ? r : 100 - r;
+  };
+  // a field of blades → HTML string (outer .weed = cursor push, inner <i> = idle sway)
   const weedField = (n, o) => {
     let html = "";
     for (let i = 0; i < n; i++) {
-      let left;
-      if (o.edge) {                                          // cluster into the two bottom corners
-        const r = Math.random() * o.edge;
-        left = Math.random() < 0.5 ? r : 100 - r;
-      } else left = Math.random() * 100;
+      const left = o.edge ? edgeLeft(o.edge) : Math.random() * 100;
       const h = o.hMin + Math.random() * (o.hMax - o.hMin);
       const w = h * (0.12 + Math.random() * 0.07);
       const fill = o.palette[(Math.random() * o.palette.length) | 0];
@@ -220,8 +220,24 @@
       const delay = (-Math.random() * dur).toFixed(2);
       const amp = (2.4 + Math.random() * 3.6).toFixed(1);
       const op = (o.opMin + Math.random() * (o.opMax - o.opMin)).toFixed(2);
-      html += `<span class="weed" style="left:${left.toFixed(1)}%;--sd:${dur}s;--sdl:${delay}s;` +
-              `--amp:${amp}deg;opacity:${op};z-index:${h | 0}">${svg}</span>`;
+      html += `<span class="weed" data-weed style="left:${left.toFixed(1)}%;opacity:${op};z-index:${h | 0}">` +
+              `<i style="--sd:${dur}s;--sdl:${delay}s;--amp:${amp}deg">${svg}</i></span>`;
+    }
+    return html;
+  };
+  // substrate pebbles → HTML string
+  const PEBBLES = ["#CBB68A", "#A7A290", "#86A05A", "#5E6B49"];
+  const pebbleRow = (n, o) => {
+    let html = "";
+    for (let i = 0; i < n; i++) {
+      const left = o.edge ? edgeLeft(o.edge) : Math.random() * 100;
+      const w = o.wMin + Math.random() * (o.wMax - o.wMin);
+      const h = w * (0.5 + Math.random() * 0.22);
+      const fill = PEBBLES[(Math.random() * PEBBLES.length) | 0];
+      const op = (o.opMin + Math.random() * (o.opMax - o.opMin)).toFixed(2);
+      const rot = (Math.random() * 16 - 8).toFixed(1);
+      html += `<span class="pebble" style="left:${left.toFixed(1)}%;width:${w | 0}px;height:${h | 0}px;` +
+              `background:${fill};opacity:${op};transform:rotate(${rot}deg);z-index:${(w | 0) + 200}"></span>`;
     }
     return html;
   };
@@ -230,14 +246,132 @@
   const lobFlora = $("#lobFlora");
   if (lobFlora) {
     const small = window.innerWidth < 640;
-    // back layer: faint, no outline (depth) → front layer: bolder, mostly outlined (brutalist)
+    // back blades (faint, depth) → front blades (bold, outlined) → a band of pebbles to root them
     lobFlora.innerHTML =
       weedField(small ? 7 : 12, { hMin: 60, hMax: 150, palette: ["#3DDC97", "#1F9E6E"], outline: 0, opMin: 0.16, opMax: 0.3 }) +
-      weedField(small ? 5 : 9, { hMin: 70, hMax: 175, palette: GREENS, outline: 0.7, opMin: 0.7, opMax: 0.95, edge: 30 });
+      weedField(small ? 5 : 9, { hMin: 70, hMax: 175, palette: GREENS, outline: 0.7, opMin: 0.7, opMax: 0.95, edge: 30 }) +
+      pebbleRow(small ? 9 : 16, { wMin: 16, wMax: 46, opMin: 0.55, opMax: 0.9 });
   }
   const seabed = $("#seabed");
   if (seabed && window.innerWidth >= 720) {                  // skip the tank floor on small screens
-    seabed.innerHTML = weedField(10, { hMin: 46, hMax: 104, palette: GREENS, outline: 0.5, opMin: 0.14, opMax: 0.26, edge: 17 });
+    seabed.innerHTML =
+      weedField(10, { hMin: 46, hMax: 104, palette: GREENS, outline: 0.5, opMin: 0.14, opMax: 0.26, edge: 17 }) +
+      pebbleRow(10, { wMin: 14, wMax: 40, opMin: 0.12, opMax: 0.24, edge: 17 });
+  }
+
+  /* ===================================================================
+     Aquarium life — click ripples · cursor-parted seaweed · drifting fish
+     =================================================================== */
+  const pointer = { x: -1, y: -1 };
+  const panelEl = $(".lobster__panel");
+
+  // click anywhere → a few bubbles rise from the spot (the water is disturbed)
+  const fxLayer = document.createElement("div");
+  fxLayer.style.cssText = "position:fixed;inset:0;z-index:9989;pointer-events:none;overflow:hidden";
+  fxLayer.setAttribute("aria-hidden", "true");
+  document.body.appendChild(fxLayer);
+  const disturb = (x, y) => {
+    if (reduceMotion) return;
+    const n = 3 + (Math.random() * 2 | 0);
+    for (let i = 0; i < n; i++) {
+      const b = document.createElement("span"); b.className = "egg-rise";
+      const sz = 5 + Math.random() * 7; b.style.width = b.style.height = `${sz | 0}px`;
+      fxLayer.appendChild(b);
+      const x0 = x + (Math.random() * 18 - 9), y0 = y + (Math.random() * 8 - 4);
+      const rise = 42 + Math.random() * 58, drift = Math.random() * 22 - 11;
+      b.animate([
+        { transform: `translate(${x0.toFixed(1)}px, ${y0.toFixed(1)}px) scale(.5)`, opacity: 0 },
+        { opacity: .85, offset: .15 },
+        { transform: `translate(${(x0 + drift).toFixed(1)}px, ${(y0 - rise).toFixed(1)}px) scale(1)`, opacity: 0 },
+      ], { duration: 700 + Math.random() * 500, delay: i * 40, easing: "cubic-bezier(.4,0,.5,1)", fill: "forwards" })
+        .onfinish = () => b.remove();
+    }
+  };
+  window.addEventListener("pointerdown", (e) => disturb(e.clientX, e.clientY), { passive: true });
+
+  // cursor "parts" the ecosystem seaweed as it sweeps near the tank floor
+  const floraWeeds = lobFlora ? [...lobFlora.querySelectorAll("[data-weed]")] : [];
+  let pmRaf = 0;
+  if (floraWeeds.length && panelEl) {
+    let weedMeta = [], lastBand = false;
+    const measureWeeds = () => { weedMeta = floraWeeds.map((el) => ({ el, cx: el.offsetLeft + el.offsetWidth / 2 })); };
+    measureWeeds();
+    window.addEventListener("resize", measureWeeds, { passive: true });
+    const updateBend = () => {
+      pmRaf = 0;
+      const r = panelEl.getBoundingClientRect();
+      const band = pointer.x >= 0 && pointer.y > r.bottom - 175 && pointer.y < r.bottom + 55 &&
+                   pointer.x > r.left - 70 && pointer.x < r.right + 70;
+      if (!band) { if (lastBand) weedMeta.forEach((m) => m.el.style.setProperty("--push", "0deg")); lastBand = false; return; }
+      lastBand = true;
+      const R = 80, MAX = 17;
+      for (const m of weedMeta) {
+        const d = pointer.x - (r.left + m.cx);
+        const push = Math.abs(d) < R ? -Math.sign(d) * (1 - Math.abs(d) / R) * MAX : 0;
+        m.el.style.setProperty("--push", push.toFixed(1) + "deg");
+      }
+    };
+    window.addEventListener("pointermove", (e) => {
+      pointer.x = e.clientX; pointer.y = e.clientY;
+      if (!pmRaf) pmRaf = requestAnimationFrame(updateBend);
+    }, { passive: true });
+    document.addEventListener("mouseleave", () => { pointer.x = pointer.y = -1; if (!pmRaf) pmRaf = requestAnimationFrame(updateBend); });
+  } else {
+    window.addEventListener("pointermove", (e) => { pointer.x = e.clientX; pointer.y = e.clientY; }, { passive: true });
+    document.addEventListener("mouseleave", () => { pointer.x = pointer.y = -1; });
+  }
+
+  // drifting fish that dart away from the cursor
+  const crittersHost = $("#critters");
+  if (crittersHost && !reduceMotion) {
+    const FISHCOL = ["#3D6E8E", "#4FA3A0", "#7C6B8A", "#C56A3D", "#557A8E"];
+    const fishSVG = (c) =>
+      `<svg width="36" height="22" viewBox="0 0 36 22">` +
+      `<path d="M3 11 C 6 3.5, 21 3.5, 26 11 C 21 18.5, 6 18.5, 3 11 Z" fill="${c}" stroke="#14110B" stroke-width="1.6"/>` +
+      `<path d="M24.5 11 L 34 5 L 32 11 L 34 17 Z" fill="${c}" stroke="#14110B" stroke-width="1.6" stroke-linejoin="round"/>` +
+      `<circle cx="9" cy="9.4" r="1.5" fill="#14110B"/></svg>`;
+    let W = innerWidth, H = innerHeight;
+    const N = W < 720 ? 2 : 3;
+    const fishes = [];
+    const reset = (f, now, spread) => {
+      f.dir = Math.random() < 0.5 ? 1 : -1;
+      f.scale = 0.55 + Math.random() * 0.6;
+      f.baseY = (0.14 + Math.random() * 0.74) * H;
+      f.bobA = 6 + Math.random() * 14; f.bobW = 0.8 + Math.random() * 0.9; f.phase = Math.random() * 6.28;
+      f.speed = 32 + Math.random() * 36;
+      f.x = spread ? Math.random() * W : (f.dir > 0 ? -60 : W + 60);
+      f.waitUntil = spread ? 0 : now + (1500 + Math.random() * 5500);
+      f.el.style.opacity = (0.18 + Math.random() * 0.16).toFixed(2);
+    };
+    for (let i = 0; i < N; i++) {
+      const el = document.createElement("span");
+      el.className = "fish"; el.innerHTML = fishSVG(FISHCOL[(Math.random() * FISHCOL.length) | 0]);
+      crittersHost.appendChild(el);
+      const f = { el }; reset(f, 0, true); fishes.push(f);
+    }
+    let last = performance.now(), raf = 0;
+    const tick = (now) => {
+      const dt = Math.min(0.05, (now - last) / 1000); last = now; const t = now / 1000;
+      for (const f of fishes) {
+        if (now < f.waitUntil) continue;                  // resting off-screen between crossings
+        let sp = f.speed, veer = 0;
+        if (pointer.x >= 0) {
+          const dx = f.x - pointer.x, dy = f.y - pointer.y, dist = Math.hypot(dx, dy);
+          if (dist < 135) { const k = 1 - dist / 135; sp = f.speed * (1 + k * 2.4); veer = Math.sign(dy || 1) * k * 50; }
+        }
+        f.x += f.dir * sp * dt;
+        f.y = f.baseY + Math.sin(t * f.bobW + f.phase) * f.bobA + veer;
+        if ((f.dir > 0 && f.x > W + 70) || (f.dir < 0 && f.x < -70)) reset(f, now, false);
+        f.el.style.transform = `translate(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px) scale(${f.scale.toFixed(2)}) scaleX(${f.dir})`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    window.addEventListener("resize", () => { W = innerWidth; H = innerHeight; }, { passive: true });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) cancelAnimationFrame(raf);
+      else { last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); }
+    });
   }
 
   /* ===================================================================
@@ -652,6 +786,94 @@
     const watchBottom = () => { if (atBottom()) { celebrate(); window.removeEventListener("scroll", watchBottom); } };
     window.addEventListener("scroll", watchBottom, { passive: true });
 
+    // 🍤 feeding — drop food into the tank, lobsters scuttle over and gobble it up
+    let feedBusy = false;
+    const feed = () => {
+      if (feedBusy) return; feedBusy = true;
+      const small = window.innerWidth < 640;
+      const W = window.innerWidth, H = window.innerHeight;
+      const ground = H - (small ? 54 : 66);                 // floor line — lobsters sit clear of the edge
+      toast("🍤 投喂时间！小龙虾们冲过来啦～");
+
+      if (reduceMotion) {                                   // calm version: pellets fade, no chase
+        for (let i = 0; i < 5; i++) {
+          const fd = document.createElement("span"); fd.className = "egg-food";
+          fd.style.transform = `translate(${(rand(0.2, 0.8) * W) | 0}px, ${(rand(0.25, 0.6) * H) | 0}px)`;
+          eggLayer.appendChild(fd);
+          fd.animate([{ opacity: 0 }, { opacity: 1, offset: .2 }, { opacity: 1, offset: .8 }, { opacity: 0 }],
+            { duration: 2600, fill: "forwards" }).onfinish = () => fd.remove();
+        }
+        setTimeout(() => { feedBusy = false; }, 2800);
+        return;
+      }
+
+      // food pellets sinking from the top with a little wobble
+      const foods = [];
+      const nFood = small ? 6 : 9;
+      for (let i = 0; i < nFood; i++) {
+        const el = document.createElement("span"); el.className = "egg-food";
+        el.style.background = ["#FF4D1C", "#FF5DA2", "#C8FF2D"][i % 3];
+        eggLayer.appendChild(el);
+        foods.push({ el, x: rand(0.12, 0.88) * W, y: rand(-60, -10), vy: 120 + Math.random() * 70,
+          swA: 8 + Math.random() * 14, swW: 1 + Math.random() * 1.4, ph: Math.random() * 6.28, eaten: false });
+      }
+      // hungry lobsters waiting on the floor
+      const lobs = [];
+      const nLob = small ? 2 : 3;
+      for (let i = 0; i < nLob; i++) {
+        const el = document.createElement("span"); el.className = "egg-feedlob"; el.textContent = "🦞";
+        el.style.fontSize = `${((small ? 30 : 36) + Math.random() * 12) | 0}px`;
+        eggLayer.appendChild(el);
+        lobs.push({ el, x: (i + 0.5) / nLob * W + rand(-40, 40), y: ground, speed: 230 + Math.random() * 90, chomp: 0 });
+      }
+
+      let last = performance.now(), t0 = last, raf = 0, ended = false;
+      const finish = () => {
+        if (ended) return; ended = true; cancelAnimationFrame(raf);
+        lobs.forEach((l, i) => {                           // satisfied → scuttle off the nearest side
+          const dir = l.x < W / 2 ? -1 : 1;
+          l.el.animate([
+            { transform: l.el.style.transform, opacity: 1 },
+            { transform: `translate(${(l.x + dir * W * 0.34) | 0}px, ${l.y | 0}px) scaleX(${dir < 0 ? 1 : -1})`, opacity: 0 },
+          ], { duration: 1100, delay: i * 90, easing: "ease-in", fill: "forwards" }).onfinish = () => l.el.remove();
+        });
+        foods.forEach((f) => { if (!f.eaten) f.el.remove(); });
+        toast("🦞 喂饱啦！谢谢投喂 ❤️", 3200);
+        setTimeout(() => { feedBusy = false; }, 1500);
+      };
+
+      const tick = (now) => {
+        const dt = Math.min(0.05, (now - last) / 1000); last = now; const t = (now - t0) / 1000;
+        for (const f of foods) {                           // sink + settle on the floor
+          if (f.eaten) continue;
+          f.y = Math.min(ground + 6, f.y + f.vy * dt);
+          const drawX = f.x + Math.sin(t * f.swW + f.ph) * f.swA;
+          f.el.style.transform = `translate(${drawX.toFixed(1)}px, ${f.y.toFixed(1)}px)`;
+        }
+        for (const l of lobs) {                            // chase nearest uneaten pellet
+          let target = null, td = 1e9;
+          for (const f of foods) { if (f.eaten) continue; const d = Math.abs(f.x - l.x); if (d < td) { td = d; target = f; } }
+          let dir = 0;
+          if (target) {
+            dir = Math.sign(target.x - l.x);
+            if (Math.abs(target.x - l.x) > 6) l.x += dir * l.speed * dt;
+            const ty = target.y > ground - 230 ? Math.max(target.y - 16, ground - 150) : ground;
+            l.y += (ty - l.y) * Math.min(1, dt * 6);
+            if (Math.abs(target.x - l.x) < 30 && Math.abs(target.y - l.y) < 38) {
+              target.eaten = true; l.chomp = 1; const fx = target.x, fy = target.y; target.el.remove(); disturb(fx, fy);
+            }
+          } else { l.y += (ground - l.y) * Math.min(1, dt * 6); }
+          l.chomp = Math.max(0, l.chomp - dt * 3);
+          const face = dir < 0 ? 1 : -1;                   // 🦞 faces left by default
+          const bob = Math.sin(t * 12 + l.x * 0.05) * (dir !== 0 ? 3 : 1);
+          l.el.style.transform = `translate(${l.x.toFixed(1)}px, ${(l.y + bob).toFixed(1)}px) scale(${(1 + l.chomp * 0.25).toFixed(2)}) scaleX(${face})`;
+        }
+        if (foods.every((f) => f.eaten) || t > (small ? 9 : 11)) { finish(); return; }
+        raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    };
+
     // trigger: 5 rapid clicks
     let clicks = 0, clickTimer;
     window.addEventListener("pointerdown", () => {
@@ -671,6 +893,7 @@
       if (k.length === 1) {
         typed = (typed + k).slice(-8);
         if (/lobster$|cjy$/.test(typed)) { typed = ""; parade(); }
+        else if (/feed$/.test(typed)) { typed = ""; feed(); }
       }
     });
 
@@ -702,17 +925,27 @@
       const btn = hintWrap.querySelector(".egg-hint__btn");
       const coarse = window.matchMedia("(pointer: coarse)").matches;
       const lines = ["任意处连续点 5 下"];
-      if (coarse) lines.push("摇一摇你的手机 📱");
-      else { lines.push("输入 lobster 或 cjy"); lines.push("Konami：↑↑↓↓←→←→ B A"); }
+      if (coarse) { lines.push("摇一摇你的手机 📱"); lines.push("点下面的 🍤 投喂小龙虾"); }
+      else { lines.push("输入 lobster 或 cjy"); lines.push("输入 feed 投喂小龙虾 🍤"); lines.push("Konami：↑↑↓↓←→←→ B A"); }
       const pop = document.createElement("div");
       pop.className = "egg-hint__pop";
-      pop.innerHTML = `<h4>🦞 藏了几只小龙虾彩蛋</h4><ul>${lines.map((l) => `<li>· ${l}</li>`).join("")}</ul><button class="egg-hint__try" type="button">放一群虾出来 🦞</button>`;
+      pop.innerHTML = `<h4>🦞 藏了几只小龙虾彩蛋</h4><ul>${lines.map((l) => `<li>· ${l}</li>`).join("")}</ul>` +
+        `<button class="egg-hint__try" type="button">放一群虾出来 🦞</button>` +
+        `<button class="egg-hint__try egg-hint__try--feed" type="button">投喂小龙虾 🍤</button>`;
       hintWrap.appendChild(pop);
       const setOpen = (o) => { pop.classList.toggle("is-open", o); btn.setAttribute("aria-expanded", String(o)); };
       btn.addEventListener("click", (e) => { e.stopPropagation(); setOpen(!pop.classList.contains("is-open")); });
       pop.querySelector(".egg-hint__try").addEventListener("click", (e) => { e.stopPropagation(); parade(); });
+      pop.querySelector(".egg-hint__try--feed").addEventListener("click", (e) => { e.stopPropagation(); feed(); });
       document.addEventListener("click", () => setOpen(false));
       document.addEventListener("keydown", (e) => { if (e.key === "Escape") setOpen(false); });
+    }
+
+    // hidden trigger: poke the big hero lobster to feed the tank
+    const bigLob = document.querySelector(".hero__biglob");
+    if (bigLob) {
+      bigLob.title = "戳我喂虾 🍤";
+      bigLob.addEventListener("click", () => feed());
     }
 
     // console hello
