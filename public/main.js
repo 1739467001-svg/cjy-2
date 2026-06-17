@@ -540,6 +540,7 @@
 
         const dx = rand(-24, 24), g = +(rand(2, 7)).toFixed(1), tilt = rand(-22, 22) | 0;
         const spin = (rand(220, 520) | 0) * (Math.random() < 0.5 ? -1 : 1);
+        const sw = rand(0.3, 0.6), sr = rand(2, 5) | 0, ph = Math.random() < 0.5 ? 1 : -1;
 
         if (reduceMotion) {
           const a = p.animate([
@@ -563,8 +564,12 @@
           { offset: 0.42, transform: `translate(${(dx * .95) | 0}vw, -${b2 | 0}vh) rotate(${(spin * .9) | 0}deg)`, easing: DN },   // hop 2
           { offset: 0.46, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${(spin * .96) | 0}deg)`, easing: UP },               // floor
           { offset: 0.49, transform: `translate(${dx | 0}vw, -${b3 | 0}vh) rotate(${tilt}deg)`, easing: DN },                      // hop 3 (settling)
-          { offset: 0.52, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, easing: "linear" },                     // settle on floor
-          { offset: 0.92, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, opacity: 1, easing: "linear" },         // rest — lingers a while
+          { offset: 0.52, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, easing: "ease-in-out" },               // settle on floor
+          { offset: 0.60, transform: `translate(${+(dx + sw * ph).toFixed(2)}vw, -${g}vh) rotate(${tilt + sr * ph}deg)`, easing: "ease-in-out" },   // sway
+          { offset: 0.68, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, easing: "ease-in-out" },               // center
+          { offset: 0.76, transform: `translate(${+(dx - sw * ph).toFixed(2)}vw, -${g}vh) rotate(${tilt - sr * ph}deg)`, easing: "ease-in-out" },   // sway other way
+          { offset: 0.84, transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, easing: "ease-in-out" },               // center
+          { offset: 0.92, transform: `translate(${+(dx + sw * ph * 0.4).toFixed(2)}vw, -${g}vh) rotate(${tilt + ((sr * ph * 0.4) | 0)}deg)`, opacity: 1, easing: "linear" }, // mid-sway fade
           { offset: 1,    transform: `translate(${dx | 0}vw, -${g}vh) rotate(${tilt}deg)`, opacity: 0 },                           // fade
         ], { duration: rand(8500, 11000) | 0, delay: rand(0, 350) | 0, fill: "forwards" });
         a.onfinish = () => p.remove();
