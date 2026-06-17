@@ -180,6 +180,67 @@
   }
 
   /* ===================================================================
+     Swaying seaweed — makes the whole page feel like an ecosystem tank 🌿
+     =================================================================== */
+  // one tapering, gently-curved seaweed blade as an inline <svg>
+  const bladeSVG = (h, w, fill, stroke, waves, phase) => {
+    const steps = 14, L = [], R = [];
+    let minX = Infinity, maxX = -Infinity;
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const y = +(h - t * h).toFixed(1);
+      const halfW = (w * 0.5) * (1 - t * 0.9) + 0.6;        // taper to a soft point
+      const cx = w * 0.5 + Math.sin(phase + t * waves * Math.PI) * (w * 0.7) * t; // bends more toward the tip
+      const lx = cx - halfW, rx = cx + halfW;
+      if (lx < minX) minX = lx; if (rx > maxX) maxX = rx;
+      L.push([lx, y]); R.push([rx, y]);
+    }
+    const pts = L.concat(R.reverse());
+    const d = "M" + pts.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" L") + "Z";
+    const pad = 2, vbX = (minX - pad).toFixed(1), vbW = (maxX - minX + pad * 2).toFixed(1);
+    const st = stroke ? `stroke="${stroke}" stroke-width="2.2" stroke-linejoin="round"` : "";
+    return `<svg width="${vbW}" height="${h | 0}" viewBox="${vbX} 0 ${vbW} ${h | 0}">` +
+           `<path d="${d}" fill="${fill}" ${st}/></svg>`;
+  };
+  // a field of blades → HTML string
+  const weedField = (n, o) => {
+    let html = "";
+    for (let i = 0; i < n; i++) {
+      let left;
+      if (o.edge) {                                          // cluster into the two bottom corners
+        const r = Math.random() * o.edge;
+        left = Math.random() < 0.5 ? r : 100 - r;
+      } else left = Math.random() * 100;
+      const h = o.hMin + Math.random() * (o.hMax - o.hMin);
+      const w = h * (0.12 + Math.random() * 0.07);
+      const fill = o.palette[(Math.random() * o.palette.length) | 0];
+      const stroke = o.outline && Math.random() < o.outline ? "var(--ink)" : "";
+      const svg = bladeSVG(h, w, fill, stroke, 0.7 + Math.random() * 0.8, Math.random() * Math.PI * 2);
+      const dur = (4.5 + Math.random() * 3.8).toFixed(2);
+      const delay = (-Math.random() * dur).toFixed(2);
+      const amp = (2.4 + Math.random() * 3.6).toFixed(1);
+      const op = (o.opMin + Math.random() * (o.opMax - o.opMin)).toFixed(2);
+      html += `<span class="weed" style="left:${left.toFixed(1)}%;--sd:${dur}s;--sdl:${delay}s;` +
+              `--amp:${amp}deg;opacity:${op};z-index:${h | 0}">${svg}</span>`;
+    }
+    return html;
+  };
+
+  const GREENS = ["#C8FF2D", "#3DDC97", "#1F9E6E"];
+  const lobFlora = $("#lobFlora");
+  if (lobFlora) {
+    const small = window.innerWidth < 640;
+    // back layer: faint, no outline (depth) → front layer: bolder, mostly outlined (brutalist)
+    lobFlora.innerHTML =
+      weedField(small ? 7 : 12, { hMin: 60, hMax: 150, palette: ["#3DDC97", "#1F9E6E"], outline: 0, opMin: 0.16, opMax: 0.3 }) +
+      weedField(small ? 5 : 9, { hMin: 70, hMax: 175, palette: GREENS, outline: 0.7, opMin: 0.7, opMax: 0.95, edge: 30 });
+  }
+  const seabed = $("#seabed");
+  if (seabed && window.innerWidth >= 720) {                  // skip the tank floor on small screens
+    seabed.innerHTML = weedField(10, { hMin: 46, hMax: 104, palette: GREENS, outline: 0.5, opMin: 0.14, opMax: 0.26, edge: 17 });
+  }
+
+  /* ===================================================================
      Reveal on scroll — scroll-driven (robust against anchor jumps /
      instant scrollIntoView, where IntersectionObserver can miss firing)
      =================================================================== */

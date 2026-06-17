@@ -423,6 +423,23 @@ mark {
   100% { transform: translateY(calc(-1 * var(--rise, 520px))) scale(1.1); opacity: 0; }
 }
 
+/* swaying seaweed — turns the page into an ecosystem tank 🌿 */
+.weed {
+  position: absolute; bottom: 0; transform-origin: 50% 100%;
+  animation: sway var(--sd, 6s) ease-in-out var(--sdl, 0s) infinite alternate;
+  will-change: transform;
+}
+.weed svg { display: block; }
+@keyframes sway {
+  from { transform: rotate(calc(-1 * var(--amp, 4deg))); }
+  to   { transform: rotate(var(--amp, 4deg)); }
+}
+/* flora rooted at the bottom of the ecosystem panel (behind the cards) */
+.flora  { position: absolute; left: 0; right: 0; bottom: -2px; height: 0; z-index: 0; pointer-events: none; }
+/* site-wide "tank floor" flora — faint, hugs the bottom corners of every screen */
+.seabed { position: fixed;  left: 0; right: 0; bottom: 0;  height: 0; z-index: -2; pointer-events: none; overflow-x: clip; overflow-y: visible; }
+@media (prefers-reduced-motion: reduce) { .weed { animation: none; } }
+
 /* "raise a lobster" methodology flow */
 .lobflow { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: 0 0 1.9rem; position: relative; z-index: 1; }
 .lobflow__step {
