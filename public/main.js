@@ -821,14 +821,18 @@
         foods.push({ el, x: rand(0.12, 0.88) * W, y: rand(-60, -10), vy: 120 + Math.random() * 70,
           swA: 8 + Math.random() * 14, swW: 1 + Math.random() * 1.4, ph: Math.random() * 6.28, eaten: false });
       }
-      // hungry lobsters waiting on the floor
+      // hungry lobsters waiting on the floor — spread evenly and kept fully on-screen
       const lobs = [];
       const nLob = small ? 2 : 3;
+      const pad = 12;                                        // keep clear of the screen edges
       for (let i = 0; i < nLob; i++) {
         const el = document.createElement("span"); el.className = "egg-feedlob"; el.textContent = "🦞";
         el.style.fontSize = `${((small ? 30 : 36) + Math.random() * 12) | 0}px`;
         eggLayer.appendChild(el);
-        lobs.push({ el, x: (i + 0.5) / nLob * W + rand(-40, 40), y: ground, speed: 230 + Math.random() * 90, chomp: 0 });
+        const w = el.offsetWidth || 40;                      // real emoji width, for even spacing + clamping
+        const usable = Math.max(1, W - 2 * pad - w);
+        const x = pad + (nLob === 1 ? usable / 2 : (i / (nLob - 1)) * usable) + rand(-8, 8);
+        lobs.push({ el, w, x, y: ground, speed: 230 + Math.random() * 90, chomp: 0 });
       }
 
       let last = performance.now(), t0 = last, raf = 0, ended = false;
@@ -854,19 +858,22 @@
           const drawX = f.x + Math.sin(t * f.swW + f.ph) * f.swA;
           f.el.style.transform = `translate(${drawX.toFixed(1)}px, ${f.y.toFixed(1)}px)`;
         }
-        for (const l of lobs) {                            // chase nearest uneaten pellet
+        for (const l of lobs) {                            // chase nearest uneaten pellet (by center)
+          const lc = l.x + l.w / 2;
           let target = null, td = 1e9;
-          for (const f of foods) { if (f.eaten) continue; const d = Math.abs(f.x - l.x); if (d < td) { td = d; target = f; } }
+          for (const f of foods) { if (f.eaten) continue; const d = Math.abs((f.x + 6) - lc); if (d < td) { td = d; target = f; } }
           let dir = 0;
           if (target) {
-            dir = Math.sign(target.x - l.x);
-            if (Math.abs(target.x - l.x) > 6) l.x += dir * l.speed * dt;
+            const fc = target.x + 6;                        // food centre
+            dir = Math.sign(fc - lc);
+            if (Math.abs(fc - lc) > 6) l.x += dir * l.speed * dt;
             const ty = target.y > ground - 230 ? Math.max(target.y - 16, ground - 150) : ground;
             l.y += (ty - l.y) * Math.min(1, dt * 6);
-            if (Math.abs(target.x - l.x) < 30 && Math.abs(target.y - l.y) < 38) {
+            if (Math.abs(fc - (l.x + l.w / 2)) < 24 && Math.abs(target.y - l.y) < 38) {
               target.eaten = true; l.chomp = 1; const fx = target.x, fy = target.y; target.el.remove(); disturb(fx, fy);
             }
           } else { l.y += (ground - l.y) * Math.min(1, dt * 6); }
+          l.x = Math.max(pad, Math.min(W - l.w - pad, l.x));  // never scuttle off the screen
           l.chomp = Math.max(0, l.chomp - dt * 3);
           const face = dir < 0 ? 1 : -1;                   // 🦞 faces left by default
           const bob = Math.sin(t * 12 + l.x * 0.05) * (dir !== 0 ? 3 : 1);
