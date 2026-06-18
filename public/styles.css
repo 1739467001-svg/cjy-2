@@ -312,9 +312,12 @@ mark {
 .hero__bait:active { transform: translateY(0) scale(.95); box-shadow: var(--sh-sm); }
 @keyframes baitBob  { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-4px) rotate(5deg); } }
 @keyframes baitPulse { 0% { opacity: .5; transform: scale(1); } 100% { opacity: 0; transform: scale(1.55); } }
-/* mobile: the title fills the space under the lobster, so collapse the lure to a round 🍤 */
+/* mobile: un-cram the top-right — drop the lobster behind the CJY name,
+   and move the lure down into the clear right gutter of the lower half */
 @media (max-width: 760px) {
-  .hero__bait { top: 15.5%; right: 2%; gap: 0; padding: 0; width: 44px; height: 44px; justify-content: center; font-size: 1.3rem; }
+  .hero__biglob { top: 19%; }
+  .hero__bait { top: 53%; right: 5%; gap: 0; padding: 0; width: 44px; height: 44px; justify-content: center; font-size: 1.3rem; }
+  .hero__bait::after { display: none; }   /* no longer hanging from the lobster */
   .hero__bait-txt { display: none; }
 }
 

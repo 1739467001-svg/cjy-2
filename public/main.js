@@ -6,6 +6,8 @@
   const $  = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Web Animations API — present on evergreen browsers; guard so older ones degrade quietly
+  const HAS_WAAPI = typeof Element !== "undefined" && typeof Element.prototype.animate === "function";
 
   /* ---------- footer year ---------- */
   $("#year").textContent = new Date().getFullYear();
@@ -271,7 +273,7 @@
   fxLayer.setAttribute("aria-hidden", "true");
   document.body.appendChild(fxLayer);
   const disturb = (x, y) => {
-    if (reduceMotion) return;
+    if (reduceMotion || !HAS_WAAPI) return;
     const n = 3 + (Math.random() * 2 | 0);
     for (let i = 0; i < n; i++) {
       const b = document.createElement("span"); b.className = "egg-rise";
@@ -794,6 +796,8 @@
       const W = window.innerWidth, H = window.innerHeight;
       const ground = H - (small ? 54 : 66);                 // floor line — lobsters sit clear of the edge
       toast("🍤 投喂时间！小龙虾们冲过来啦～");
+
+      if (!HAS_WAAPI) { setTimeout(() => { feedBusy = false; }, 1500); return; }  // old browsers: toast only
 
       if (reduceMotion) {                                   // calm version: pellets fade, no chase
         for (let i = 0; i < 5; i++) {
