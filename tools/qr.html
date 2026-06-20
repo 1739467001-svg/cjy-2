@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&family=Noto+Sans+SC:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
   * { margin: 0; box-sizing: border-box; }
-  html, body { width: 920px; height: 1180px; }
+  html, body { width: 920px; height: 1300px; }
   body {
     display: flex; align-items: center; justify-content: center;
     background: #F7F2E4;
@@ -18,7 +18,7 @@
     font-family: "Noto Sans SC", "Space Grotesk", system-ui, sans-serif;
   }
   .card {
-    position: relative; width: 820px; height: 1040px; overflow: hidden;
+    position: relative; width: 820px; height: 1170px; overflow: hidden;
     display: flex; flex-direction: column; align-items: center; padding: 46px 50px 0;
     color: #F7F2E4; border: 8px solid #14110B; border-radius: 36px; box-shadow: 16px 16px 0 #14110B;
     background:
@@ -32,7 +32,12 @@
   /* bubbles */
   .bub { position: absolute; z-index: 2; border-radius: 50%; border: 2px solid rgba(255,255,255,.55); background: rgba(255,255,255,.10); }
   /* header */
-  .head { position: relative; z-index: 3; width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
+  .head { position: relative; z-index: 3; width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  /* intro chips — what I do */
+  .chips { position: relative; z-index: 3; display: flex; flex-wrap: wrap; justify-content: center; gap: 13px; max-width: 700px; margin-bottom: 28px; }
+  .chip { font-weight: 700; font-size: 18px; color: #14110B; background: #FFFBF0; border: 3px solid #14110B;
+    border-radius: 999px; padding: 9px 18px; box-shadow: 4px 4px 0 #14110B; }
+  .chip--lime { background: #C8FF2D; }
   .brand { display: flex; align-items: center; gap: 15px; }
   .brand .logo { font-size: 56px; line-height: 1; filter: drop-shadow(3px 3px 0 rgba(20,17,11,.35)); }
   .name { font-weight: 900; font-size: 32px; color: #fff; letter-spacing: .5px; text-shadow: 2px 2px 0 rgba(20,17,11,.35); }
@@ -74,6 +79,12 @@
         <div><div class="name">CJY · 陈俊烨</div><div class="vibe">VIBE CODER · 生态缸</div></div>
       </div>
       <div class="badge">扫码 ↓</div>
+    </div>
+
+    <div class="chips">
+      <span class="chip">AI 教育系统数字化</span>
+      <span class="chip">未来课堂探索</span>
+      <span class="chip chip--lime">AI 多模态</span>
     </div>
 
     <div class="panel">
