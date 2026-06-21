@@ -32,9 +32,12 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html { background: var(--paper); }
 body {
   font-family: var(--sans);
-  background: var(--paper);
+  /* ecosystem "descent" — warm cream at the surface, cooling into water toward the deep end */
+  background: linear-gradient(180deg,
+    #F7F2E4 0%, #F6F1E5 18%, #F0F1E9 36%, #E7EEEB 56%, #DEE9ED 76%, #D3E3F0 100%);
   color: var(--ink);
   line-height: 1.6;
   overflow-x: hidden;
@@ -615,7 +618,7 @@ mark {
 .ccard { padding: 1.7rem; display: flex; flex-direction: column; gap: .45rem; transition: transform .2s var(--ease), box-shadow .2s var(--ease); }
 .ccard:hover { transform: translate(-4px,-4px) rotate(-1deg); box-shadow: var(--sh-lg); }
 .ccard h3 { font-size: 1.2rem; }
-.ccard__val { font-family: var(--mono); font-weight: 700; font-size: 1.02rem; word-break: break-all; opacity: .95; }
+.ccard__val { font-family: var(--mono); font-weight: 700; font-size: .92rem; overflow-wrap: anywhere; opacity: .95; }
 .ccard__acts { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .8rem; }
 .ccard__btn {
   font-family: var(--cn); font-weight: 700; font-size: .88rem; cursor: pointer;
