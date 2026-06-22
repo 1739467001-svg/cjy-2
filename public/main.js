@@ -65,6 +65,16 @@
     ambient.innerHTML = html;
   }
 
+  /* ---------- water-current dividers between sections (one descending tank) ---------- */
+  ["lobster", "projects", "journey", "campus", "volunteer", "contact"].forEach((id) => {
+    const sec = document.getElementById(id);
+    if (!sec || !sec.parentNode) return;
+    const cur = document.createElement("div");
+    cur.className = "current";
+    cur.setAttribute("aria-hidden", "true");
+    sec.parentNode.insertBefore(cur, sec);
+  });
+
   /* ===================================================================
      Project data → cards
      =================================================================== */

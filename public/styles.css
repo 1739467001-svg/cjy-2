@@ -509,6 +509,19 @@ mark {
 }
 @keyframes lcardLive { 0% { box-shadow: 0 0 0 0 rgba(200,255,45,.55); } 70%,100% { box-shadow: 0 0 0 7px rgba(200,255,45,0); } }
 
+/* water-current dividers — faint flowing waves connect the sections into one tank */
+.current {
+  width: min(92%, var(--maxw)); height: 22px; margin: 0 auto; pointer-events: none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='22'%3E%3Cpath d='M0 11 q 30 -8 60 0 t 60 0' fill='none' stroke='%2314110B' stroke-width='2' stroke-opacity='.45'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='92' height='22'%3E%3Cpath d='M0 13 q 23 7 46 0 t 46 0' fill='none' stroke='%232B47F0' stroke-width='2' stroke-opacity='.3'/%3E%3C/svg%3E");
+  background-repeat: repeat-x, repeat-x;
+  background-size: 120px 22px, 92px 22px;
+  background-position: 0 3px, 0 12px;
+  animation: currentFlow 11s linear infinite;
+}
+@keyframes currentFlow { to { background-position: 240px 3px, -184px 12px; } }
+
 /* =====================================================================
    Lobster theme enrichments 🦞
    ===================================================================== */
