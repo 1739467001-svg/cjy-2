@@ -479,6 +479,36 @@ mark {
   padding: 1.1rem 1.4rem; font-size: 1rem; font-weight: 500;
 }
 
+/* ── ecosystem cards "生物化" — each 虾 reads as a live little creature ── */
+.lcard .card__emoji { position: relative; animation: lcardSwim 5.5s ease-in-out infinite; }
+.lobster__grid .lcard:nth-child(1) .card__emoji { animation-delay: -.2s; }
+.lobster__grid .lcard:nth-child(2) .card__emoji { animation-delay: -1.5s; }
+.lobster__grid .lcard:nth-child(3) .card__emoji { animation-delay: -2.8s; }
+.lobster__grid .lcard:nth-child(4) .card__emoji { animation-delay: -4.1s; }
+@keyframes lcardSwim { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-5px) rotate(3deg); } }
+.lcard:hover .card__emoji { animation: lcardWiggle .5s ease-in-out infinite; }
+@keyframes lcardWiggle { 0%,100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg) translateY(-3px); } }
+
+/* twitchy antennae give the badge a "head" */
+.lcard .card__emoji::before, .lcard .card__emoji::after {
+  content: ""; position: absolute; top: -11px; width: 7px; height: 15px; pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 14%, var(--red) 0 3px, transparent 3.6px) top center / 7px 7px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) bottom center / 2px 11px no-repeat;
+  transform-origin: 50% 100%; animation: lcardAntenna 3s ease-in-out infinite;
+}
+.lcard .card__emoji::before { left: 8px; --a: -17deg; }
+.lcard .card__emoji::after  { right: 8px; --a:  17deg; }
+@keyframes lcardAntenna { 0%,100% { transform: rotate(calc(var(--a) - 7deg)); } 50% { transform: rotate(calc(var(--a) + 7deg)); } }
+
+/* pulsing "alive" indicator beside the index */
+.lcard__no { display: flex; align-items: center; gap: .45rem; }
+.lcard__no::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); border: 1.5px solid var(--ink);
+  animation: lcardLive 2.4s ease-out infinite;
+}
+@keyframes lcardLive { 0% { box-shadow: 0 0 0 0 rgba(200,255,45,.55); } 70%,100% { box-shadow: 0 0 0 7px rgba(200,255,45,0); } }
+
 /* =====================================================================
    Lobster theme enrichments 🦞
    ===================================================================== */
