@@ -68,31 +68,33 @@
   /* ===================================================================
      Project data → cards
      =================================================================== */
+  // shot: drop a screenshot path (e.g. "shots/cargo.jpg") to replace the placeholder.
+  // featured: renders as a larger "代表作" card. tint: placeholder accent colour.
   const projects = [
     { emoji: "🛡️", cat: "系统平台", title: "研究生院督导管理系统",
       desc: "浙江工商大学研究生院的教学督导全流程数字化管理平台。",
-      url: "http://121.196.217.243/login" },
+      url: "http://121.196.217.243/login", tint: "#FF4D1C", featured: true, shot: null },
     { emoji: "🦞", cat: "AI Agent", title: "会议室预约虾",
       desc: "会议室预约智能体：自然语言下单，自动排期与冲突检测。",
-      url: "https://meetroomshrimp-gvfhrxz8.manus.space" },
+      url: "https://meetroomshrimp-gvfhrxz8.manus.space", tint: "#FF5DA2", shot: null },
     { emoji: "🚢", cat: "数字孪生", title: "智慧港口数字孪生",
       desc: "港口装卸与物流的三维孪生可视化，实时映射运营态势。",
-      url: "https://cargo-claw.vercel.app" },
+      url: "https://cargo-claw.vercel.app", tint: "#2B47F0", shot: null },
     { emoji: "✈️", cat: "数字孪生", title: "成都天府国际机场孪生",
       desc: "天府国际机场的数字孪生模拟，空地协同的可视化沙盘。",
-      url: "http://aerotwin-tfu.vercel.app/" },
+      url: "http://aerotwin-tfu.vercel.app/", tint: "#2B47F0", shot: null },
     { emoji: "🛢️", cat: "数字孪生", title: "海上油田视觉模拟",
       desc: "海上油田钻井平台的数字孪生与视觉仿真演示。",
-      url: "https://deepblue-rig.vercel.app/" },
+      url: "https://deepblue-rig.vercel.app/", tint: "#2B47F0", shot: null },
     { emoji: "🏠", cat: "VR / 3D", title: "虚拟看房 · 样板间漫游",
       desc: "沉浸式样板间漫游，第一视角自由穿行的虚拟看房体验。",
-      url: "https://virtual-reality-mocha.vercel.app/" },
+      url: "https://virtual-reality-mocha.vercel.app/", tint: "#C8FF2D", shot: null },
     { emoji: "🪐", cat: "3D 可视化", title: "太阳系模拟与漫游",
       desc: "可交互的太阳系三维模拟，自由漫游每一颗行星。",
-      url: "https://virtual-universe-eight.vercel.app/" },
+      url: "https://virtual-universe-eight.vercel.app/", tint: "#7A5CFF", shot: null },
     { emoji: "🎨", cat: "作品展台", title: "首届 AI 黑客松作品展",
       desc: "信电学院 · 人工智能学院首届 AI 黑客松大赛学生作品展示。",
-      url: "http://43.133.22.250:8089/" },
+      url: "http://43.133.22.250:8089/", tint: "#FF4D1C", shot: null },
   ];
 
   const fmtHost = (u) => { try { return new URL(u).host; } catch { return u; } };
@@ -100,16 +102,21 @@
   const grid = $("#projectsGrid");
   if (grid) {
     grid.innerHTML = projects.map((p) => `
-      <a class="pcard reveal" data-reveal href="${p.url}" target="_blank" rel="noopener">
-        <div class="pcard__top">
-          <span class="pcard__emoji">${p.emoji}</span>
+      <a class="pcard reveal${p.featured ? " pcard--feat" : ""}" data-reveal href="${p.url}" target="_blank" rel="noopener">
+        <div class="pcard__thumb" style="--tint:${p.tint || "var(--blue)"}">
+          <span class="pcard__ghost">${p.emoji}</span>
+          ${p.shot
+            ? `<img class="pcard__shot" src="${p.shot}" alt="${p.title} 预览" loading="lazy" onerror="this.remove()">`
+            : `<span class="pcard__soon">预览即将上线</span>`}
           <span class="pcard__cat">${p.cat}</span>
         </div>
-        <h3>${p.title}</h3>
-        <p>${p.desc}</p>
-        <div class="pcard__foot">
-          <span class="pcard__url">${fmtHost(p.url)}</span>
-          <span class="pcard__arrow">↗</span>
+        <div class="pcard__body">
+          <h3>${p.title}</h3>
+          <p>${p.desc}</p>
+          <div class="pcard__foot">
+            <span class="pcard__url">${fmtHost(p.url)}</span>
+            <span class="pcard__arrow">↗</span>
+          </div>
         </div>
       </a>`).join("");
   }

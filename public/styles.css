@@ -587,23 +587,51 @@ mark {
 /* =====================================================================
    Projects
    ===================================================================== */
-.projects__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.4rem; }
+.projects__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 1.4rem; }
 .pcard {
-  display: flex; flex-direction: column; gap: .7rem; min-height: 210px;
-  padding: 1.5rem; background: var(--paper-2); border: var(--bd); border-radius: var(--radius); box-shadow: var(--sh);
-  transition: transform .2s var(--ease), box-shadow .2s var(--ease), background .2s;
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--paper-2); border: var(--bd); border-radius: var(--radius); box-shadow: var(--sh);
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease);
 }
-.pcard:hover { transform: translate(-4px,-4px) rotate(-1deg); box-shadow: var(--sh-lg); background: var(--lime); }
-.pcard__top { display: flex; align-items: center; justify-content: space-between; }
-.pcard__emoji { font-size: 1.7rem; width: 50px; height: 50px; display: grid; place-items: center; background: var(--paper); border: var(--bd-2); border-radius: 12px; box-shadow: var(--sh-sm); }
-.pcard__cat { font-family: var(--mono); font-weight: 700; font-size: .68rem; letter-spacing: 1px; text-transform: uppercase; padding: .3rem .6rem; background: var(--ink); color: var(--paper); border-radius: 999px; }
-.pcard h3 { font-size: 1.18rem; line-height: 1.35; }
-.pcard p { font-size: .9rem; color: var(--muted); flex-grow: 1; }
+.pcard:hover { transform: translate(-4px,-4px); box-shadow: var(--sh-lg); }
+.pcard:hover .pcard__body { background: var(--lime); }
 .pcard:hover p, .pcard:hover .pcard__url { color: var(--ink); }
-.pcard__foot { display: flex; align-items: center; gap: .5rem; margin-top: auto; padding-top: .3rem; }
-.pcard__url { font-family: var(--mono); font-size: .74rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pcard__arrow { margin-left: auto; font-weight: 700; font-size: 1.2rem; width: 34px; height: 34px; display: grid; place-items: center; background: var(--red); color: var(--paper); border: var(--bd-2); border-radius: 9px; transition: transform .2s var(--ease); }
+
+/* preview thumbnail — real screenshot drops into .pcard__shot, else a branded placeholder */
+.pcard__thumb {
+  position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: var(--bd);
+  display: grid; place-items: center;
+  background:
+    radial-gradient(125% 120% at 78% -10%, color-mix(in srgb, var(--tint) 42%, var(--paper-2)), var(--paper-2) 62%);
+}
+.pcard__ghost { font-size: clamp(2.6rem, 7vw, 4rem); filter: drop-shadow(3px 3px 0 rgba(20,17,11,.16)); transition: transform .3s var(--ease); }
+.pcard:hover .pcard__ghost { transform: translateY(-3px) rotate(-6deg) scale(1.06); }
+.pcard__shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .35s var(--ease); }
+.pcard:hover .pcard__shot { transform: scale(1.05); }
+.pcard__soon {
+  position: absolute; left: .7rem; bottom: .6rem; font-family: var(--mono); font-weight: 700;
+  font-size: .56rem; letter-spacing: 1.5px; color: var(--ink); opacity: .38;
+  border: 1.5px solid currentColor; border-radius: 999px; padding: .14rem .5rem;
+}
+.pcard__cat {
+  position: absolute; right: .7rem; top: .7rem; z-index: 1;
+  font-family: var(--mono); font-weight: 700; font-size: .64rem; letter-spacing: 1px; text-transform: uppercase;
+  padding: .28rem .6rem; background: var(--ink); color: var(--paper); border-radius: 999px; box-shadow: var(--sh-sm);
+}
+.pcard__body { display: flex; flex-direction: column; gap: .55rem; flex: 1; padding: 1.1rem 1.25rem 1.2rem; transition: background .2s; }
+.pcard__body h3 { font-size: 1.12rem; line-height: 1.32; }
+.pcard__body p { font-size: .88rem; color: var(--muted); flex-grow: 1; }
+.pcard__foot { display: flex; align-items: center; gap: .5rem; margin-top: .4rem; }
+.pcard__url { font-family: var(--mono); font-size: .72rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pcard__arrow { margin-left: auto; font-weight: 700; font-size: 1.15rem; width: 34px; height: 34px; display: grid; place-items: center; background: var(--red); color: var(--paper); border: var(--bd-2); border-radius: 9px; transition: transform .2s var(--ease); }
 .pcard:hover .pcard__arrow { transform: rotate(45deg) scale(1.1); }
+
+/* featured "代表作" tier — spans wider, taller preview */
+.pcard--feat { grid-column: span 2; }
+.pcard--feat .pcard__thumb { aspect-ratio: 16 / 7; }
+.pcard--feat .pcard__ghost { font-size: clamp(3.2rem, 8vw, 5.4rem); }
+.pcard--feat .pcard__body h3 { font-size: 1.3rem; }
+@media (max-width: 660px) { .pcard--feat { grid-column: span 1; } .pcard--feat .pcard__thumb { aspect-ratio: 16 / 10; } }
 
 /* =====================================================================
    Timeline (Journey)
