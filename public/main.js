@@ -22,17 +22,31 @@
     } else {
       try { sessionStorage.setItem("cjy-introed", "1"); } catch (_) {}
       document.body.style.overflow = "hidden";
-      let closed = false;
+      const fill = $("#introFill"), pct = $("#introPct");
+      const DUR = 1300, t0 = performance.now();
+      let raf = 0, closed = false;
+      const draw = (now) => {
+        const t = Math.min(1, (now - t0) / DUR);
+        const v = Math.round((1 - Math.pow(1 - t, 2)) * 100); // ease-out toward 100%
+        if (fill) fill.style.width = v + "%";
+        if (pct) pct.textContent = v + "%";
+        if (t < 1) raf = requestAnimationFrame(draw);
+      };
+      raf = requestAnimationFrame(draw);
       const finish = () => {
         if (closed) return; closed = true;
+        cancelAnimationFrame(raf);
+        if (fill) fill.style.width = "100%";
+        if (pct) pct.textContent = "100%";
         intro.classList.add("is-done");
         document.body.style.overflow = "";
-        setTimeout(() => intro.remove(), 650);
-        ["pointerdown", "keydown", "wheel", "touchstart"].forEach((e) => window.removeEventListener(e, finish));
+        setTimeout(() => intro.remove(), 820);
+        ["pointerdown", "keydown", "wheel", "touchstart"].forEach((e) => window.removeEventListener(e, onSkip));
       };
-      const timer = setTimeout(finish, 1600);
+      const onSkip = () => { clearTimeout(timer); finish(); };
+      const timer = setTimeout(finish, 1750);
       ["pointerdown", "keydown", "wheel", "touchstart"].forEach((e) =>
-        window.addEventListener(e, () => { clearTimeout(timer); finish(); }, { passive: true }));
+        window.addEventListener(e, onSkip, { passive: true }));
     }
   }
 
