@@ -671,7 +671,7 @@ mark {
 
 /* featured "代表作" tier — spans wider, taller preview */
 .pcard--feat { grid-column: span 2; }
-.pcard--feat .pcard__thumb { aspect-ratio: 16 / 7; }
+.pcard--feat .pcard__thumb { aspect-ratio: 16 / 9; }
 .pcard--feat .pcard__ghost { font-size: clamp(3.2rem, 8vw, 5.4rem); }
 .pcard--feat .pcard__body h3 { font-size: 1.3rem; }
 @media (max-width: 660px) { .pcard--feat { grid-column: span 1; } .pcard--feat .pcard__thumb { aspect-ratio: 16 / 10; } }
