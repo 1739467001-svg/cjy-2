@@ -83,7 +83,7 @@
   const projects = [
     { emoji: "🛡️", cat: "系统平台", title: "研究生院督导管理系统",
       desc: "浙江工商大学研究生院的教学督导全流程数字化管理平台。",
-      url: "http://121.196.217.243/login", tint: "#FF4D1C", featured: true, shot: "shots/supervision.png" },
+      url: "http://121.196.217.243/login", tint: "#FF4D1C", shot: "shots/supervision.png" },
     { emoji: "🦞", cat: "AI Agent", title: "会议室预约虾",
       desc: "会议室预约智能体：自然语言下单，自动排期与冲突检测。",
       url: "https://meetroomshrimp-gvfhrxz8.manus.space", tint: "#FF5DA2", shot: "shots/meetshrimp.png" },
