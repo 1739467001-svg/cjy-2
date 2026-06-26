@@ -93,7 +93,7 @@ def text_track(d, x, y, s, fnt, fill, track=0):
         x += d.textlength(ch, font=fnt) + track * S
     return x
 
-def meta(img, tag, tag_color, title, meter_segs, title_color=(247, 245, 240)):
+def meta(img, tag, tag_color, title, meter_segs, title_color=(247, 245, 240), title_shadow=(0, 0, 0, 165)):
     tagf, titf, mtrf = F(22, mono=True), F(58), F(25, mono=True)
     a1, d1 = titf.getmetrics(); tit_h = a1 + d1
     tag_h = sum(tagf.getmetrics())
@@ -106,11 +106,12 @@ def meta(img, tag, tag_color, title, meter_segs, title_color=(247, 245, 240)):
     text_track(d, x0, y0, tag, tagf, tag_color, track=4)
 
     ty = y0 + tag_h + 8 * S
-    sh = layer()
-    ImageDraw.Draw(sh).text((x0 + 2 * S, ty + 4 * S), title, font=titf,
-                            fill=(0, 0, 0, 165), stroke_width=int(1.1 * S),
-                            stroke_fill=(0, 0, 0, 165))
-    img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(7 * S)))
+    if title_shadow:
+        sh = layer()
+        ImageDraw.Draw(sh).text((x0 + 2 * S, ty + 4 * S), title, font=titf,
+                                fill=title_shadow, stroke_width=int(1.1 * S),
+                                stroke_fill=title_shadow)
+        img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(7 * S)))
     ImageDraw.Draw(img).text((x0, ty), title, font=titf, fill=title_color,
                              stroke_width=max(1, int(0.9 * S)), stroke_fill=title_color)
 
@@ -466,7 +467,225 @@ def build_solar():
          [("行星漫游 · 真实星历 · 语音解说", grey)])
     finish(img, "solar")
 
+# ================================================================ HACKATHON
+def build_hackathon():
+    ink = (20, 17, 11)
+    red, blue, lime, yellow = (255, 77, 28), (43, 71, 240), (200, 255, 45), (245, 200, 30)
+    paper = (244, 234, 210)
+    img = vgrad([(0, (247, 238, 216)), (1, (235, 223, 197))])
+    d = ImageDraw.Draw(img)
+
+    # faint halftone dots
+    for yy in range(40, 470, 34):
+        for xx in range(30, 1260, 34):
+            d.ellipse([sx(xx) - S, sx(yy) - S, sx(xx) + S, sx(yy) + S], fill=(20, 17, 11, 13))
+
+    # bunting flags across the top
+    flagcols = [red, blue, lime, yellow, red, blue, lime, yellow, red, blue]
+    n = len(flagcols)
+    pts = [(40 + i * (1200 / n), 44 + 24 * math.sin(i / n * math.pi)) for i in range(n + 1)]
+    for i in range(n):
+        d.line([(sx(pts[i][0]), sx(pts[i][1])), (sx(pts[i + 1][0]), sx(pts[i + 1][1]))], fill=ink, width=max(1, S))
+    for i in range(n):
+        (x0p, y0p), (x1p, y1p) = pts[i], pts[i + 1]
+        mx, my = (x0p + x1p) / 2, (y0p + y1p) / 2
+        tri = [(x0p, y0p), (x1p, y1p), (mx, my + 38)]
+        d.polygon([(sx(a), sx(b)) for a, b in tri], fill=flagcols[i])
+        d.polygon([(sx(a), sx(b)) for a, b in tri], outline=ink, width=max(1, S))
+
+    # soft spotlight cone over the exhibits
+    spot = layer()
+    ImageDraw.Draw(spot).polygon([(sx(560), sx(60)), (sx(120), sx(360)), (sx(1080), sx(360))], fill=(255, 250, 230, 70))
+    img.alpha_composite(spot.filter(ImageFilter.GaussianBlur(40 * S)))
+
+    # scattered memphis confetti (behind the frames)
+    cf = random.Random(5)
+    for _ in range(30):
+        x, y = cf.randint(60, 1200), cf.randint(95, 380)
+        col = cf.choice([red, blue, lime, yellow])
+        k = cf.choice(["dot", "ring", "plus", "tri", "diamond"])
+        if k == "dot":
+            d.ellipse([sx(x) - sx(7), sx(y) - sx(7), sx(x) + sx(7), sx(y) + sx(7)], fill=col, outline=ink, width=max(1, S // 2))
+        elif k == "ring":
+            d.ellipse([sx(x) - sx(8), sx(y) - sx(8), sx(x) + sx(8), sx(y) + sx(8)], outline=col, width=max(1, S))
+        elif k == "plus":
+            d.line([(sx(x - 8), sx(y)), (sx(x + 8), sx(y))], fill=col, width=max(1, 2 * S))
+            d.line([(sx(x), sx(y - 8)), (sx(x), sx(y + 8))], fill=col, width=max(1, 2 * S))
+        elif k == "tri":
+            d.polygon([(sx(x), sx(y - 8)), (sx(x - 8), sx(y + 7)), (sx(x + 8), sx(y + 7))], outline=col, width=max(1, S))
+        else:
+            d.polygon([(sx(x), sx(y - 8)), (sx(x + 8), sx(y)), (sx(x), sx(y + 8)), (sx(x - 8), sx(y))], fill=col, outline=ink, width=max(1, S // 2))
+
+    # framed AI exhibits — neo-brutalist hard border + offset shadow
+    def frame(x, y, w, h, mat, icon):
+        d.rectangle([sx(x + 12), sx(y + 14), sx(x + w + 12), sx(y + h + 14)], fill=ink)            # hard shadow
+        d.rectangle([sx(x), sx(y), sx(x + w), sx(y + h)], fill=paper)
+        d.rectangle([sx(x), sx(y), sx(x + w), sx(y + h)], outline=ink, width=sx(7))
+        ins = 16
+        d.rectangle([sx(x + ins), sx(y + ins), sx(x + w - ins), sx(y + h - ins)], fill=mat)
+        icon(x + w / 2, y + h / 2)
+
+    def ic_net(cx, cy):
+        xs, ys3, ys2 = [cx - 44, cx, cx + 44], [cy - 34, cy, cy + 34], [cy]
+        layers = [[(xs[0], v) for v in ys3], [(xs[1], v) for v in ys3], [(xs[2], v) for v in ys2]]
+        for a in layers[0]:
+            for b in layers[1]:
+                d.line([(sx(a[0]), sx(a[1])), (sx(b[0]), sx(b[1]))], fill=ink, width=max(1, S // 2))
+        for b in layers[1]:
+            d.line([(sx(b[0]), sx(b[1])), (sx(layers[2][0][0]), sx(layers[2][0][1]))], fill=ink, width=max(1, S // 2))
+        for col in layers:
+            for (px, py) in col:
+                d.ellipse([sx(px) - sx(6), sx(py) - sx(6), sx(px) + sx(6), sx(py) + sx(6)], fill=ink)
+
+    def ic_chart(cx, cy):
+        bx, by = cx - 50, cy + 40
+        d.line([(sx(bx), sx(cy - 44)), (sx(bx), sx(by)), (sx(bx + 100), sx(by))], fill=ink, width=max(1, S))
+        for i, hh in enumerate([28, 50, 38, 66]):
+            x = bx + 16 + i * 22
+            d.rectangle([sx(x), sx(by - hh), sx(x + 14), sx(by)], fill=ink)
+
+    def ic_chat(cx, cy):
+        d.rounded_rectangle([sx(cx - 52), sx(cy - 38), sx(cx + 52), sx(cy + 18)], radius=sx(14), outline=ink, width=max(1, 2 * S))
+        d.polygon([(sx(cx - 24), sx(cy + 16)), (sx(cx - 6), sx(cy + 16)), (sx(cx - 22), sx(cy + 36))], fill=ink)
+        d.text((sx(cx), sx(cy - 32)), "AI", font=F(30), fill=ink, anchor="ma")
+
+    def ic_robot(cx, cy):
+        d.line([(sx(cx), sx(cy - 54)), (sx(cx), sx(cy - 38))], fill=ink, width=max(1, 2 * S))
+        d.ellipse([sx(cx) - sx(4), sx(cy - 58), sx(cx) + sx(4), sx(cy - 50)], fill=ink)
+        d.rounded_rectangle([sx(cx - 42), sx(cy - 38), sx(cx + 42), sx(cy + 30)], radius=sx(12), outline=ink, width=max(1, 2 * S))
+        for ex in (-18, 18):
+            d.ellipse([sx(cx + ex) - sx(9), sx(cy - 12) - sx(9), sx(cx + ex) + sx(9), sx(cy - 12) + sx(9)], fill=ink)
+        d.line([(sx(cx - 16), sx(cy + 12)), (sx(cx + 16), sx(cy + 12))], fill=ink, width=max(1, 2 * S))
+
+    for fx in [(95, 118, 200, 210, lime, ic_net), (390, 104, 200, 210, blue, ic_chart),
+               (685, 118, 200, 210, red, ic_chat), (980, 104, 200, 210, yellow, ic_robot)]:
+        frame(*fx)
+
+    # "首届" rosette medal
+    mx, my = 590, 362
+    glow(img, lambda dd: dd.ellipse([sx(mx) - sx(30), sx(my) - sx(30), sx(mx) + sx(30), sx(my) + sx(30)], fill=(255, 77, 28, 110)), blur=10)
+    d.polygon([(sx(mx - 14), sx(my + 18)), (sx(mx - 4), sx(my + 60)), (sx(mx + 2), sx(my + 42))], fill=blue)
+    d.polygon([(sx(mx + 14), sx(my + 18)), (sx(mx + 4), sx(my + 60)), (sx(mx - 2), sx(my + 42))], fill=red)
+    for ang in range(0, 360, 30):
+        rx, ry = mx + 30 * math.cos(math.radians(ang)), my + 30 * math.sin(math.radians(ang))
+        d.line([(sx(mx), sx(my)), (sx(rx), sx(ry))], fill=yellow, width=max(1, 2 * S))
+    d.ellipse([sx(mx) - sx(24), sx(my) - sx(24), sx(mx) + sx(24), sx(my) + sx(24)], fill=red, outline=ink, width=max(1, 2 * S))
+    d.text((sx(mx), sx(my)), "首届", font=F(16), fill=paper, anchor="mm")
+
+    scrim(img, color=paper, start=0.52, strength=0.96)
+    meta(img, "HACKATHON · 首届 AI 黑客松", red, "学生作品 · 展台",
+         [("信电学院 · 人工智能学院", (70, 60, 45))], title_color=ink, title_shadow=None)
+    finish(img, "hackathon")
+
+# ================================================================ VIRTUAL HOUSE
+def build_virtual_house():
+    img = vgrad([(0, (60, 46, 34)), (1, (32, 24, 18))])
+    d = ImageDraw.Draw(img)
+    VP = (560, 346)
+    BL, BR, TL, TR = (358, 452), (812, 452), (358, 206), (812, 206)
+
+    d.polygon([(sx(0), sx(800)), (sx(1280), sx(800)), (sx(BR[0]), sx(BR[1])), (sx(BL[0]), sx(BL[1]))], fill=(122, 88, 56))   # floor
+    d.polygon([(sx(0), sx(0)), (sx(1280), sx(0)), (sx(TR[0]), sx(TR[1])), (sx(TL[0]), sx(TL[1]))], fill=(92, 75, 60))        # ceiling
+    d.polygon([(sx(0), sx(0)), (sx(TL[0]), sx(TL[1])), (sx(BL[0]), sx(BL[1])), (sx(0), sx(800))], fill=(118, 93, 71))        # left wall
+    d.polygon([(sx(1280), sx(0)), (sx(TR[0]), sx(TR[1])), (sx(BR[0]), sx(BR[1])), (sx(1280), sx(800))], fill=(168, 134, 100))  # right wall
+    d.rectangle([sx(TL[0]), sx(TL[1]), sx(BR[0]), sx(BR[1])], fill=(150, 120, 92))                                          # back wall
+
+    for fx in range(-7, 8):                                # floorboard seams converge to VP
+        d.line([(sx(560 + fx * 95), sx(800)), (sx(VP[0]), sx(VP[1]))], fill=(86, 60, 38, 130), width=max(1, S))
+    for i in range(1, 7):
+        t = (i / 7) ** 1.7; y = 452 + (800 - 452) * t
+        d.line([(0, sx(y)), (WS, sx(y))], fill=(86, 60, 38, int(95 * (1 - t) + 18)), width=max(1, S))
+
+    # sunset window on the back wall
+    wx0, wy0, wx1, wy1 = 600, 236, 792, 430
+    win = Image.new("RGB", (sx(wx1 - wx0), sx(wy1 - wy0)))
+    wd = ImageDraw.Draw(win)
+    for yy in range(win.height):
+        t = yy / win.height
+        if t < 0.62:
+            c = tuple(int(a + (b - a) * (t / 0.62)) for a, b in zip((255, 222, 150), (255, 168, 96)))
+        else:
+            c = tuple(int(a + (b - a) * ((t - 0.62) / 0.38)) for a, b in zip((255, 168, 96), (150, 92, 110)))
+        wd.line([(0, yy), (win.width, yy)], fill=c)
+    img.paste(win, (sx(wx0), sx(wy0)))
+    glow(img, lambda dd: dd.ellipse([sx(696) - sx(30), sx(356) - sx(30), sx(696) + sx(30), sx(356) + sx(30)], fill=(255, 246, 214, 235)), blur=16)
+    d.ellipse([sx(696) - sx(20), sx(356) - sx(20), sx(696) + sx(20), sx(356) + sx(20)], fill=(255, 250, 224))
+    d.rectangle([sx(wx0), sx(wy0), sx(wx1), sx(wy1)], outline=(46, 34, 24), width=sx(8))
+    d.line([(sx((wx0 + wx1) / 2), sx(wy0)), (sx((wx0 + wx1) / 2), sx(wy1))], fill=(46, 34, 24), width=sx(5))
+    d.line([(sx(wx0), sx((wy0 + wy1) / 2)), (sx(wx1), sx((wy0 + wy1) / 2))], fill=(46, 34, 24), width=sx(5))
+    shaft = layer()
+    ImageDraw.Draw(shaft).polygon([(sx(wx0), sx(452)), (sx(wx1), sx(452)), (sx(wx1 - 150), sx(720)), (sx(wx0 - 360), sx(720))], fill=(255, 206, 124, 70))
+    img.alpha_composite(shaft.filter(ImageFilter.GaussianBlur(16 * S)))
+
+    def floor_shadow(cx, cy, rw, rh):
+        sl = layer()
+        ImageDraw.Draw(sl).ellipse([sx(cx - rw), sx(cy - rh), sx(cx + rw), sx(cy + rh)], fill=(0, 0, 0, 115))
+        img.alpha_composite(sl.filter(ImageFilter.GaussianBlur(9 * S)))
+
+    # wall art on the left wall (perspective)
+    d.polygon([(sx(150), sx(298)), (sx(248), sx(284)), (sx(248), sx(398)), (sx(150), sx(420))], fill=(60, 46, 36))
+    d.polygon([(sx(162), sx(308)), (sx(238), sx(296)), (sx(238), sx(388)), (sx(162), sx(406))], fill=(150, 170, 175))
+    d.polygon([(sx(162), sx(372)), (sx(238), sx(360)), (sx(238), sx(388)), (sx(162), sx(406))], fill=(96, 126, 120))
+
+    # pendant light
+    d.line([(sx(470), sx(0)), (sx(470), sx(150))], fill=(40, 30, 22), width=max(1, S))
+    d.polygon([(sx(452), sx(150)), (sx(488), sx(150)), (sx(480), sx(178)), (sx(460), sx(178))], fill=(54, 42, 32))
+    glow(img, lambda dd: dd.ellipse([sx(470) - sx(20), sx(182) - sx(20), sx(470) + sx(20), sx(182) + sx(20)], fill=(255, 226, 150, 200)), blur=14)
+
+    # rug
+    rug = layer(); dru = ImageDraw.Draw(rug)
+    dru.polygon([(sx(372), sx(636)), (sx(742), sx(636)), (sx(828), sx(764)), (sx(286), sx(764))], fill=(176, 120, 96, 225))
+    dru.polygon([(sx(404), sx(652)), (sx(712), sx(652)), (sx(774), sx(748)), (sx(342), sx(748))], outline=(214, 166, 134, 230), width=max(1, 2 * S))
+    img.alpha_composite(rug)
+
+    # sofa (cool tone to pop against the warm room)
+    floor_shadow(520, 612, 190, 30)
+    sofa, sofa_d, sofa_l = (98, 122, 136), (74, 94, 106), (124, 148, 160)
+    d.rectangle([sx(392), sx(498), sx(648), sx(548)], fill=sofa_d)                       # backrest
+    d.rectangle([sx(392), sx(498), sx(648), sx(512)], fill=sofa_l)
+    d.rectangle([sx(384), sx(508), sx(420), sx(602)], fill=sofa)                         # left arm
+    d.rectangle([sx(620), sx(508), sx(656), sx(602)], fill=sofa)                         # right arm
+    d.rectangle([sx(384), sx(508), sx(398), sx(602)], fill=sofa_l)
+    d.rectangle([sx(414), sx(540), sx(626), sx(596)], fill=sofa)                         # seat
+    for cxs in (446, 520, 594):                                                         # cushions
+        d.line([(sx(cxs), sx(542)), (sx(cxs), sx(594))], fill=sofa_d, width=max(1, S))
+        d.rectangle([sx(cxs - 34), sx(516), sx(cxs + 34), sx(548)], fill=sofa_l, outline=sofa_d, width=max(1, S))
+
+    # coffee table on the rug
+    floor_shadow(556, 712, 130, 24)
+    d.polygon([(sx(486), sx(686)), (sx(636), sx(686)), (sx(668), sx(712)), (sx(454), sx(712))], fill=(150, 100, 64))
+    d.polygon([(sx(454), sx(712)), (sx(668), sx(712)), (sx(668), sx(720)), (sx(454), sx(720))], fill=(108, 72, 46))
+    for lx in (470, 652):
+        d.rectangle([sx(lx), sx(712), sx(lx + 10), sx(744)], fill=(96, 64, 40))
+
+    # floor lamp (right)
+    glow(img, lambda dd: dd.ellipse([sx(892) - sx(40), sx(494) - sx(40), sx(892) + sx(40), sx(494) + sx(40)], fill=(255, 224, 150, 150)), blur=22)
+    d.rectangle([sx(888), sx(500), sx(896), sx(706)], fill=(50, 38, 28))
+    d.ellipse([sx(860), sx(700), sx(924), sx(716)], fill=(40, 30, 22))
+    d.polygon([(sx(866), sx(500)), (sx(918), sx(500)), (sx(906), sx(456)), (sx(878), sx(456))], fill=(255, 226, 158))
+
+    # potted plant (left foreground)
+    floor_shadow(196, 742, 60, 18)
+    d.polygon([(sx(168), sx(700)), (sx(224), sx(700)), (sx(214), sx(748)), (sx(178), sx(748))], fill=(170, 96, 64))
+    d.polygon([(sx(168), sx(700)), (sx(224), sx(700)), (sx(220), sx(712)), (sx(172), sx(712))], fill=(196, 120, 84))
+    for lx, ly, lw, lh, cc in [(196, 660, 16, 56, (70, 120, 70)), (174, 672, 14, 44, (88, 140, 84)),
+                               (218, 672, 14, 44, (88, 140, 84)), (196, 642, 13, 40, (104, 158, 96))]:
+        d.ellipse([sx(lx - lw), sx(ly - lh), sx(lx + lw), sx(ly + lh)], fill=cc)
+
+    # warm ambience
+    amb = layer()
+    ImageDraw.Draw(amb).ellipse([sx(696 - 360), sx(356 - 280), sx(696 + 360), sx(356 + 280)], fill=(255, 190, 110, 46))
+    img.alpha_composite(amb.filter(ImageFilter.GaussianBlur(90 * S)))
+
+    scrim(img, color=(28, 18, 12), start=0.5, strength=0.9)
+    vignette(img, strength=0.5, inner=0.62)
+    meta(img, "VIRTUAL HOUSE · 虚拟看房", (255, 228, 184), "样板间 · 沉浸式漫游",
+         [("两室一厅 · 灯光 / 家具 / 装修 ", (225, 214, 198)), ("自由调", (255, 210, 140))])
+    finish(img, "virtual-house")
+
 if __name__ == "__main__":
     build_port()
     build_airport()
     build_solar()
+    build_hackathon()
+    build_virtual_house()
