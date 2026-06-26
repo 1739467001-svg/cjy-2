@@ -32,7 +32,11 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-html { background: var(--paper); }
+/* NOTE: keep <html> background-free. Body's gradient below propagates to the
+   canvas (painted at the very back) only while html has no background. Give
+   html a background and that propagation stops — body's gradient then paints
+   ON TOP of the fixed z-index:-2/-1 layers (.ambient bubbles, .critters fish,
+   .bg-grid, .seabed) and buries them. */
 body {
   font-family: var(--sans);
   /* ecosystem "descent" — warm cream at the surface, cooling into water toward the deep end */
