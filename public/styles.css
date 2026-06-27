@@ -648,8 +648,13 @@ mark {
 .pcard__thumb {
   position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: var(--bd);
   display: grid; place-items: center;
-  background:
-    radial-gradient(125% 120% at 78% -10%, color-mix(in srgb, var(--tint) 42%, var(--paper-2)), var(--paper-2) 62%);
+  background: var(--paper-2); /* fallback for browsers without color-mix() (Chrome <111, Safari <16.2) */
+}
+@supports (background: color-mix(in srgb, red 50%, blue)) {
+  .pcard__thumb {
+    background:
+      radial-gradient(125% 120% at 78% -10%, color-mix(in srgb, var(--tint) 42%, var(--paper-2)), var(--paper-2) 62%);
+  }
 }
 .pcard__ghost { font-size: clamp(2.6rem, 7vw, 4rem); filter: drop-shadow(3px 3px 0 rgba(20,17,11,.16)); transition: transform .3s var(--ease); }
 .pcard:hover .pcard__ghost { transform: translateY(-3px) rotate(-6deg) scale(1.06); }
