@@ -18,18 +18,21 @@ CW, CH = 820 * S, 1170 * S
 
 
 def caption(card, cx, y, text, emoji="🦞", fsize=27):
-    """Centered bold caption with a trailing colour emoji."""
+    """Centered bold caption with a trailing colour emoji. `y` is the text top;
+    returns the height occupied (text/emoji, whichever is taller) for stacking."""
     f = K.font(fsize * S)
     d = ImageDraw.Draw(card)
     bb = d.textbbox((0, 0), text, font=f)
-    tw = bb[2] - bb[0]
+    tw, th = bb[2] - bb[0], bb[3] - bb[1]
     em = K.emoji_img(emoji, fsize * 1.15 * S)
-    gap = 10 * S
+    gap = 12 * S
     total = tw + gap + em.width
     x = cx - total / 2
     d.text((x + 2 * S, y + 2 * S), text, font=f, fill=(INK[0], INK[1], INK[2], 100))
     d.text((x, y), text, font=f, fill=(255, 255, 255, 255))
-    K.paste(card, em, (x + tw + gap, y + (bb[3] - bb[1]) / 2 - em.height / 2 + bb[1]), "lt")
+    em_top = y + th / 2 - em.height / 2 + bb[1]
+    K.paste(card, em, (x + tw + gap, em_top), "lt")
+    return int(max(bb[3], em_top + em.height - y))
 
 
 def build():
@@ -48,12 +51,14 @@ def build():
 
     # QR glass panel
     rows, ver = K.qr_matrix(URL)
-    K.qr_panel(card, (CW / 2, 520 * S), 520 * S, rows, pad=30, knockout=0.20)
+    box = K.qr_panel(card, (CW / 2, 506 * S), 520 * S, rows, pad=30, knockout=0.20)
+    panel_bottom = box[3] + 11 * S          # include the panel's drop shadow
 
-    # caption + url
-    caption(card, CW / 2, 812 * S, "扫码游进我的生态缸")
+    # caption + url — stacked below the panel with guaranteed gaps (no overlap)
+    cap_y = panel_bottom + 30 * S
+    cap_h = caption(card, CW / 2, cap_y, "扫码游进我的生态缸")
     url = K.pill(DISPLAY, 20, INK, LIME, px=22, py=11, bw=3, mono=True, tracking=1.2)
-    K.paste(card, url, (CW / 2, 872 * S), "ct")
+    K.paste(card, url, (CW / 2, cap_y + cap_h + 26 * S), "ct")
 
     # planted floor
     K.seaweed(card, CH - 6 * S,
